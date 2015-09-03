@@ -3,17 +3,21 @@
 module Main where
 
 import Bitmap
-import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.Vector as V
 
 outputFileName :: String
 outputFileName = "test.ppm"
 
+imgWidth :: Int
+imgWidth = 1000
+imgHeight :: Int
+imgHeight = 1000
+
 sampleHeader :: PPMFileHeader
-sampleHeader = PPMFileHeader "P3" 2 2 255
+sampleHeader = PPMFileHeader imgWidth imgHeight 255
 
 samplePixels :: Pixels
-samplePixels = V.fromList [Pixel 255 0 0, Pixel 0 255 0, Pixel 0 0 255, Pixel 0 0 0]
+samplePixels = V.fromList $ map (\_ -> Pixel 127 194 255) [1..imgWidth*imgHeight]
 
 sampleFile :: PPMFile
 sampleFile = PPMFile sampleHeader samplePixels
@@ -21,6 +25,6 @@ sampleFile = PPMFile sampleHeader samplePixels
 main :: IO ()
 main = do
     putStrLn "Welcome to raytracaH\n"
-    BS.writeFile outputFileName (prepareFileContentsToSave sampleFile)
+    writeAsciiPPMFile outputFileName sampleFile
     putStrLn "Work finished"
     return ()

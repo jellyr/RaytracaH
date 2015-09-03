@@ -5,15 +5,15 @@ module Bitmap(
         Pixel(..),
         Pixels,
         PPMFile(..),
-        prepareFileContentsToSave
+        writeAsciiPPMFile
     ) where
 
 import Data.ByteString.Lazy (ByteString)
+import System.IO
 import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.Vector as V
 
 data PPMFileHeader = PPMFileHeader {
-    typeHeader :: ByteString,
     imageWidth :: Int,
     imageHeight :: Int,
     maxColorValue :: Int
@@ -36,14 +36,22 @@ instance Show Pixel where
             gVal = g pixel
             bVal = b pixel
 
-prepareFileContentsToSave :: PPMFile -> ByteString
-prepareFileContentsToSave (PPMFile fileHeader filePixels) = BS.append (prepareHeaderForPPM fileHeader) (preparePixelsToSave filePixels)
+asciiPPMFileMagicNumber :: ByteString
+asciiPPMFileMagicNumber = "P3"
 
-prepareHeaderForPPM :: PPMFileHeader -> ByteString
-prepareHeaderForPPM fileHeader = 
+writeAsciiPPMFile :: String -> PPMFile -> IO ()
+writeAsciiPPMFile fileName (PPMFile fileHeader pixels) = do
+    file <- openFile fileName WriteMode
+    BS.hPutStr file (prepareHeaderForAsciiPPM fileHeader)
+    writePixelsToAsciiPPM file pixels
+    hClose file
+    return ()
+
+prepareHeaderForAsciiPPM :: PPMFileHeader -> ByteString
+prepareHeaderForAsciiPPM fileHeader = 
     foldl BS.append BS.empty [fileTypeHeader, "\n", dimensionsLine, "\n", maxColorValueLine, "\n"]
     where
-        fileTypeHeader = typeHeader fileHeader
+        fileTypeHeader = asciiPPMFileMagicNumber
         dimensionsLine = prepareDimensionsLine fileHeader
         maxColorValueLine = BS.pack $ show $ maxColorValue fileHeader
 
@@ -54,7 +62,10 @@ prepareDimensionsLine fileHeader =
         imgWidth = BS.pack $ show $ imageWidth fileHeader
         imgHeight = BS.pack $ show $ imageHeight fileHeader
 
-preparePixelsToSave :: Pixels -> ByteString
-preparePixelsToSave pp = V.foldl BS.append BS.empty pixelsAsText
-    where 
-        pixelsAsText = V.map (\p -> BS.append (BS.pack $ show p) " ") pp
+writePixelsToAsciiPPM :: Handle -> Pixels -> IO ()
+writePixelsToAsciiPPM file pixels = do
+    V.mapM_ (\pixel -> BS.hPutStr file (pixelWithTrailingSpace pixel)) pixels
+    return ()
+    where
+        pixelAsString pixel = BS.pack $ show pixel
+        pixelWithTrailingSpace pixel = BS.append (pixelAsString pixel) " "
