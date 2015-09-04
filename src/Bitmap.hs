@@ -36,9 +36,6 @@ instance Show Pixel where
             gVal = g pixel
             bVal = b pixel
 
-asciiPPMFileMagicNumber :: ByteString
-asciiPPMFileMagicNumber = "P3"
-
 writeAsciiPPMFile :: String -> PPMFile -> IO ()
 writeAsciiPPMFile fileName (PPMFile fileHeader pixels) = do
     file <- openFile fileName WriteMode
@@ -49,11 +46,17 @@ writeAsciiPPMFile fileName (PPMFile fileHeader pixels) = do
 
 prepareHeaderForAsciiPPM :: PPMFileHeader -> ByteString
 prepareHeaderForAsciiPPM fileHeader = 
-    foldl BS.append BS.empty [fileTypeHeader, "\n", dimensionsLine, "\n", maxColorValueLine, "\n"]
+    foldl BS.append BS.empty $ linesWithNewLineBetween [fileTypeHeader, dimensionsLine, maxColorValueLine]
     where
         fileTypeHeader = asciiPPMFileMagicNumber
         dimensionsLine = prepareDimensionsLine fileHeader
         maxColorValueLine = BS.pack $ show $ maxColorValue fileHeader
+
+linesWithNewLineBetween :: [ByteString] -> [ByteString]
+linesWithNewLineBetween = concatMap (\line -> [line, "\n"])
+
+asciiPPMFileMagicNumber :: ByteString
+asciiPPMFileMagicNumber = "P3"
 
 prepareDimensionsLine :: PPMFileHeader -> ByteString 
 prepareDimensionsLine fileHeader =
@@ -64,8 +67,8 @@ prepareDimensionsLine fileHeader =
 
 writePixelsToAsciiPPM :: Handle -> Pixels -> IO ()
 writePixelsToAsciiPPM file pixels = do
-    V.mapM_ (\pixel -> BS.hPutStr file (pixelWithTrailingSpace pixel)) pixels
+    V.mapM_ (BS.hPutStr file . addTrailingSpace) pixels
     return ()
     where
-        pixelAsString pixel = BS.pack $ show pixel
-        pixelWithTrailingSpace pixel = BS.append (pixelAsString pixel) " "
+        asByteString pixel = BS.pack $ show pixel
+        addTrailingSpace pixel = BS.append (asByteString pixel) " "

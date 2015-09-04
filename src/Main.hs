@@ -6,7 +6,7 @@ import Bitmap
 import qualified Data.Vector as V
 
 outputFileName :: String
-outputFileName = "test.ppm"
+outputFileName = "../test.ppm"
 
 imgWidth :: Int
 imgWidth = 1000
