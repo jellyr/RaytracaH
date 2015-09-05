@@ -22,25 +22,18 @@ generatePrimaryRays screen fov eye =
     V.map (\coords -> Ray eye (Vec.normalize (coords - eye))) pixelsCameraCoords
     where
         pixels = screenPixels screen
-        screenCoords = ndcToScreenCoords screen $ pixelsToNdc screen pixels
-        pixelsCameraCoords = screenCoordsToCameraCoords fov screenCoords
+        pixelsCameraCoords = pixelsToCameraCoords screen fov pixels
 
 screenPixels :: Screen -> PixelsCoords
 screenPixels (Screen screenW screenH) = 
     V.fromList [ (y, x) | y <- [1..screenH], x <- [1..screenW] ]
 
-pixelsToNdc :: Screen -> PixelsCoords -> V.Vector Vector2D
-pixelsToNdc (Screen screenW screenH) = 
-    V.map (\(y, x) -> Vec.Vec2F ((fromIntegral x + 0.5)/fromIntegral screenW) ((fromIntegral y + 0.5)/fromIntegral screenH))
-
-ndcToScreenCoords :: Screen -> V.Vector Vector2D -> V.Vector Vector2D
-ndcToScreenCoords (Screen screenW screenH) = 
-    V.map (\(Vec.Vec2F x y) -> Vec.Vec2F ((2*x - 1)*aspectRatio) (1 - 2*y))
+pixelsToCameraCoords :: Screen -> Float -> PixelsCoords -> V.Vector Vector3D
+pixelsToCameraCoords (Screen screenW screenH) fov = 
+    V.map (\(y, x) -> screenCoordsToCamera $ ndcToScreenCoords $ ndcCoords x y)
     where
+        ndcCoords x y = Vec.Vec2F ((fromIntegral x + 0.5)/fromIntegral screenW) ((fromIntegral y + 0.5)/fromIntegral screenH)
+        ndcToScreenCoords (Vec.Vec2F x y) = Vec.Vec2F ((2*x - 1)*aspectRatio) (1 - 2*y)
+        screenCoordsToCamera (Vec.Vec2F x y) = Vec.Vec3F (x * fovTanValue) (y * fovTanValue) (-1.0)
         aspectRatio = fromIntegral screenW/fromIntegral screenH
-
-screenCoordsToCameraCoords :: Float -> V.Vector Vector2D -> V.Vector Vector3D
-screenCoordsToCameraCoords fov = 
-    V.map (\(Vec.Vec2F x y) -> Vec.Vec3F (x * fovTanValue) (y * fovTanValue) (-1.0))
-    where 
         fovTanValue = tan (deg2rad (fov / 2))
