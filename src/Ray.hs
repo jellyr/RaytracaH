@@ -6,15 +6,15 @@ import qualified Data.Vector as V
 import RayTracer
 import Util
 
+type Vector2D = Vec.Packed (Vec.Vec2 Float)
+type Vector3D = Vec.Packed (Vec.Vec3 Float)
+
 data Ray = Ray {
-    origin :: Vec.Packed (Vec.Vec3 Float),
-    direction :: Vec.Packed (Vec.Vec3 Float)
+    origin :: Vector3D,
+    direction :: Vector3D
 } deriving (Show)
 
 type PixelsCoords = V.Vector (Int, Int)
-
-type Vector2D = Vec.Packed (Vec.Vec2 Float)
-type Vector3D = Vec.Packed (Vec.Vec3 Float)
 
 -- TODO: eye must be (0,0,0) now, implement transformation of origin point
 generatePrimaryRays :: Screen -> Float -> Vector3D -> V.Vector Ray
@@ -29,11 +29,20 @@ screenPixels (Screen screenW screenH) =
     V.fromList [ (y, x) | y <- [1..screenH], x <- [1..screenW] ]
 
 pixelsToCameraCoords :: Screen -> Float -> PixelsCoords -> V.Vector Vector3D
-pixelsToCameraCoords (Screen screenW screenH) fov = 
-    V.map (\(y, x) -> screenCoordsToCamera $ ndcToScreenCoords $ ndcCoords x y)
+pixelsToCameraCoords screen fov = 
+    V.map (\(y, x) -> screenCoordsToCameraCoords fov $ ndcToScreenCoords screen $ pixelToNdc x y)
     where
-        ndcCoords x y = Vec.Vec2F ((fromIntegral x + 0.5)/fromIntegral screenW) ((fromIntegral y + 0.5)/fromIntegral screenH)
-        ndcToScreenCoords (Vec.Vec2F x y) = Vec.Vec2F ((2*x - 1)*aspectRatio) (1 - 2*y)
-        screenCoordsToCamera (Vec.Vec2F x y) = Vec.Vec3F (x * fovTanValue) (y * fovTanValue) (-1.0)
-        aspectRatio = fromIntegral screenW/fromIntegral screenH
+        pixelToNdc = pixelToNdcCoords screen
+
+pixelToNdcCoords :: Screen -> Int -> Int-> Vector2D
+pixelToNdcCoords (Screen screenW screenH) x y = Vec.Vec2F ((fromIntegral x + 0.5)/fromIntegral screenW) ((fromIntegral y + 0.5)/fromIntegral screenH)
+
+ndcToScreenCoords :: Screen  -> Vector2D -> Vector2D
+ndcToScreenCoords (Screen screenW screenH) (Vec.Vec2F x y) = Vec.Vec2F ((2*x - 1)*aspectRatio) (1 - 2*y)
+    where
+        aspectRatio = fromIntegral screenW / fromIntegral screenH
+
+screenCoordsToCameraCoords :: Float -> Vector2D -> Vector3D
+screenCoordsToCameraCoords fov (Vec.Vec2F x y) = Vec.Vec3F (x * fovTanValue) (y * fovTanValue) (-1.0)
+    where
         fovTanValue = tan (deg2rad (fov / 2))
