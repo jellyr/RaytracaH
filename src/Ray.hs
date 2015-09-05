@@ -6,9 +6,6 @@ import qualified Data.Vector as V
 import RayTracer
 import Util
 
-type Vector2D = Vec.Packed (Vec.Vec2 Float)
-type Vector3D = Vec.Packed (Vec.Vec3 Float)
-
 data Ray = Ray {
     origin :: Vector3D,
     direction :: Vector3D

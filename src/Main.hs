@@ -7,14 +7,16 @@ import qualified Data.Vector as V
 import qualified Data.Vec as Vec
 import qualified RayTracer as RT
 import qualified Ray as R
+import qualified Primitive as P
 
+-- temporary stuff, only for result testing purpose
 outputFileName :: String
 outputFileName = "../test.ppm"
 
 imgWidth :: Int
-imgWidth = 1280
+imgWidth = 640
 imgHeight :: Int
-imgHeight = 720
+imgHeight = 480
 
 sampleHeader :: PPMFileHeader
 sampleHeader = PPMFileHeader imgWidth imgHeight 255
@@ -22,15 +24,22 @@ sampleHeader = PPMFileHeader imgWidth imgHeight 255
 screen :: RT.Screen
 screen = RT.Screen imgWidth imgHeight
 
+sampleSphere :: P.Sphere
+sampleSphere = P.Sphere (Vec.Vec3F 0.0 0.0 (-10.0)) 2.0
+
 samplePixels :: Pixels
 samplePixels = 
-    V.map rayToPixel primaryRays
+    V.map (\ray -> 
+        let
+            intersection = P.intersect sampleSphere ray
+        in
+            if intersection == P.NoIntersection then
+                Pixel 194 204 255
+            else
+                Pixel 255 0 0
+        ) primaryRays
     where
         primaryRays = R.generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
-        rayToPixel (R.Ray _ direction) = 
-            Pixel (ceiling (x * 255)) (ceiling (y * 255)) (ceiling (z * 255))
-            where
-                (Vec.Vec3F x y z) = (direction + Vec.Vec3F 1 1 1) * 0.5
 
 sampleFile :: PPMFile
 sampleFile = PPMFile sampleHeader samplePixels
