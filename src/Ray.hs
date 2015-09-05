@@ -3,7 +3,7 @@ module Ray where
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
 
-import RayTracer
+import Screen
 import Util
 
 data Ray = Ray {

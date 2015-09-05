@@ -1,6 +1,6 @@
 module Primitive where
 
-import Ray
+import Ray (Ray)
 
 data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
 

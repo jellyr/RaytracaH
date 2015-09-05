@@ -13,14 +13,14 @@ data Sphere = Sphere {
 
 instance Primitive Sphere where
     intersect (Sphere c rr) (Ray rayOrigin rayDir) = 
-        if tca < 0 || d2 > rr2 || all (< 0) tParams then
+        if tca < 0 || dSquared > rSquared || all (< 0) tParams then
             NoIntersection
         else
             Intersection (minimum (filter (> 0) tParams))
         where
             vecL = c - rayOrigin
             tca = vecL `dot` rayDir
-            d2 = vecL `dot` vecL - tca * tca
-            rr2 = rr * rr
-            thc = sqrt (rr2 - d2)
+            dSquared = vecL `dot` vecL - tca * tca
+            rSquared = rr * rr
+            thc = sqrt (rSquared - dSquared)
             tParams = [tca - thc, tca + thc]
