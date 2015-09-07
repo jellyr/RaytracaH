@@ -15,12 +15,12 @@ data Plane = Plane {
 
 instance Primitive Plane where
     intersect (Plane pp n _) (Ray rayOrigin rayDir) = 
-        if t >= 0 then
-            Intersection t
+        if distance >= 0 then
+            Intersection distance
         else 
             NoIntersection
         where
-            t = ((pp - rayOrigin) `dot` n) / (n `dot` rayDir)
+            distance = ((pp - rayOrigin) `dot` n) / (n `dot` rayDir)
 
     normalAtHitPoint (Plane _ planeNormal _) _ =
         planeNormal

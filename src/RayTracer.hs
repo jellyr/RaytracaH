@@ -38,7 +38,7 @@ render screenW screenH primitives
             let
                 primitiveWithintersection = findNearestIntersectingPrimitive primitives ray infinityDistance (Nothing, NoIntersection)
             in
-                case primitiveWithintersection of (Just primitive, Intersection t) -> calculateColor t primitive ray
+                case primitiveWithintersection of (Just primitive, Intersection distance) -> calculateColor distance primitive ray
                                                   _ -> backgroundColor
                                   
             ) primaryRays
@@ -63,9 +63,9 @@ findNearestIntersectingPrimitive primitives ray tNearest result
             proceedWithNoIntersection = findInTail tNearest result
 
 calculateColor :: Float -> AnyPrimitive -> Ray -> Pixel
-calculateColor t primitive (Ray rOrigin rDirectory) = 
+calculateColor distance primitive (Ray rOrigin rDirectory) = 
     let
-        pHit = rOrigin + rDirectory * Vec.Vec3F t t t
+        pHit = rOrigin + rDirectory * Vec.Vec3F distance distance distance
         nHit = normalAtHitPoint primitive pHit
         intensity = max 0.0 (Vec.dot nHit (rDirectory * (-1.0)))
         primitiveColor = fmap (\c -> ceiling (intensity * fromIntegral c)) (color primitive)
