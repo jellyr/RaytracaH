@@ -3,6 +3,7 @@
 module RayTracer where
 
 import Bitmap
+import Color
 import Screen
 import Primitive
 import Ray

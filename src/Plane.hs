@@ -2,6 +2,7 @@ module Plane where
 
 import Data.Vec (dot)
 
+import Color
 import Primitive
 import Ray
 import Util

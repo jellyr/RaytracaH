@@ -7,7 +7,7 @@ import qualified Data.Vector as V
 import Data.Time
 
 import Bitmap
-import Primitive
+import Color
 import Sphere
 import Plane
 import RayTracer

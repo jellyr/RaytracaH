@@ -2,6 +2,7 @@ module Sphere where
 
 import Data.Vec (dot, normalize)
 
+import Color
 import Primitive
 import Ray
 import Util
