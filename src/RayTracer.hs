@@ -21,21 +21,20 @@ backgroundColor = Pixel 194 204 255
 infinityDistance :: Float
 infinityDistance = 10000.0
 
---TODO: rewrite it in more elegant way
 render :: Screen -> V.Vector AnyPrimitive -> Pixels
 render screen primitives
     | V.null primitives = V.map (const backgroundColor) primaryRays
     | otherwise = 
-        V.map (\ray -> 
-            let
-                primitiveWithintersection = findNearestIntersectingPrimitive primitives ray infinityDistance (Nothing, NoIntersection)
-            in
-                case primitiveWithintersection of (Just primitive, Intersection distance) -> calculateColor distance primitive ray
-                                                  _ -> backgroundColor
-                                  
-            ) primaryRays
+        V.map (castRayAtPrimitives primitives) primaryRays
     where
         primaryRays = generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
+
+castRayAtPrimitives :: V.Vector AnyPrimitive -> Ray -> Pixel
+castRayAtPrimitives primitives ray = 
+    case primitiveWithintersection of (Just primitive, Intersection distance) -> calculateColorForHitPrimitive distance primitive ray
+                                      _ -> backgroundColor
+    where
+        primitiveWithintersection = findNearestIntersectingPrimitive primitives ray infinityDistance (Nothing, NoIntersection)
 
 findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> (Maybe AnyPrimitive, IntersectionResult) -> (Maybe AnyPrimitive, IntersectionResult)
 findNearestIntersectingPrimitive primitives ray tNearest result
@@ -53,8 +52,8 @@ findNearestIntersectingPrimitive primitives ray tNearest result
             findInTail = findNearestIntersectingPrimitive (V.tail primitives) ray
             proceedWithNoIntersection = findInTail tNearest result
 
-calculateColor :: Float -> AnyPrimitive -> Ray -> Pixel
-calculateColor distance primitive (Ray rOrigin rDirectory) = 
+calculateColorForHitPrimitive :: Float -> AnyPrimitive -> Ray -> Pixel
+calculateColorForHitPrimitive distance primitive (Ray rOrigin rDirectory) = 
     let
         pHit = rOrigin + rDirectory * Vec.Vec3F distance distance distance
         nHit = normalAtHitPoint primitive pHit
