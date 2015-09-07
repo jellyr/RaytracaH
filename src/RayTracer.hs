@@ -1,3 +1,5 @@
+{-# LANGUAGE ExistentialQuantification #-}
+
 module RayTracer where
 
 import Bitmap
@@ -8,7 +10,15 @@ import Ray
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
 
-fileWithRenderedImage :: Primitive a => Int -> Int -> V.Vector a -> PPMFile
+-- TODO: eliminate existential type
+data AnyPrimitive = forall p . Primitive p => AnyPrimitive p
+
+instance Primitive AnyPrimitive where 
+    intersect (AnyPrimitive p) = intersect p
+    normalAtHitPoint (AnyPrimitive p) = normalAtHitPoint p
+    color (AnyPrimitive p) = color p
+
+fileWithRenderedImage :: Int -> Int -> V.Vector AnyPrimitive -> PPMFile
 fileWithRenderedImage screenW screenH primitives = 
     PPMFile (PPMFileHeader screenW screenH 255) (render screenW screenH primitives)
 
@@ -19,7 +29,7 @@ infinityDistance :: Float
 infinityDistance = 10000.0
 
 --TODO: rewrite it in more elegant way
-render :: Primitive a => Int -> Int -> V.Vector a -> Pixels
+render :: Int -> Int -> V.Vector AnyPrimitive -> Pixels
 render screenW screenH primitives
     | V.null primitives = V.map (const backgroundColor) primaryRays
     | otherwise = 
@@ -35,7 +45,7 @@ render screenW screenH primitives
         screen = Screen screenW screenH
         primaryRays = generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
 
-findNearestIntersectingPrimitive :: Primitive a => V.Vector a -> Ray -> Float -> (Maybe a, IntersectionResult) -> (Maybe a, IntersectionResult)
+findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> (Maybe AnyPrimitive, IntersectionResult) -> (Maybe AnyPrimitive, IntersectionResult)
 findNearestIntersectingPrimitive primitives ray tNearest result
     | V.null primitives = result
     | otherwise = 
@@ -51,7 +61,7 @@ findNearestIntersectingPrimitive primitives ray tNearest result
             findInTail = findNearestIntersectingPrimitive (V.tail primitives) ray
             proceedWithNoIntersection = findInTail tNearest result
 
-calculateColor :: Primitive a => Float -> a -> Ray -> Pixel
+calculateColor :: Float -> AnyPrimitive -> Ray -> Pixel
 calculateColor t primitive (Ray rOrigin rDirectory) = 
     let
         pHit = rOrigin + rDirectory * Vec.Vec3F t t t
