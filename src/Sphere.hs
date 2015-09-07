@@ -8,12 +8,12 @@ import Util
 
 data Sphere = Sphere {
     center :: Vector3D,
-    r :: Float,
+    radius :: Float,
     color :: Color Int
 }
 
 instance Primitive Sphere where
-    intersect (Sphere sphereCenter sphereRay _) (Ray rayOrigin rayDir) = 
+    intersect (Sphere sphereCenter sphereRdius _) (Ray rayOrigin rayDir) = 
         if tca < 0 || dSquared > rSquared || all (< 0) tParams then
             NoIntersection
         else
@@ -22,7 +22,7 @@ instance Primitive Sphere where
             vecL = sphereCenter - rayOrigin
             tca = vecL `dot` rayDir
             dSquared = vecL `dot` vecL - tca * tca
-            rSquared = sphereRay * sphereRay
+            rSquared = sphereRdius * sphereRdius
             thc = sqrt (rSquared - dSquared)
             tParams = [tca - thc, tca + thc]
 
