@@ -8,11 +8,13 @@ import Data.Time
 
 import Bitmap
 import Color
+import Primitive
 import Sphere
 import Plane
 import RayTracer
 
--- temporary stuff, only for result testing purpose
+-- TODO: temporary stuff, only for result testing purpose
+-- in future all config and input will be loaded from file
 outputFileName :: String
 outputFileName = "../test.ppm"
 

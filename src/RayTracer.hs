@@ -1,5 +1,3 @@
-{-# LANGUAGE ExistentialQuantification #-}
-
 module RayTracer where
 
 import Bitmap
@@ -10,14 +8,6 @@ import Ray
 
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
-
--- TODO: eliminate existential type
-data AnyPrimitive = forall p . Primitive p => AnyPrimitive p
-
-instance Primitive AnyPrimitive where 
-    intersect (AnyPrimitive p) = intersect p
-    normalAtHitPoint (AnyPrimitive p) = normalAtHitPoint p
-    color (AnyPrimitive p) = color p
 
 fileWithRenderedImage :: Int -> Int -> V.Vector AnyPrimitive -> PPMFile
 fileWithRenderedImage screenW screenH primitives = 
