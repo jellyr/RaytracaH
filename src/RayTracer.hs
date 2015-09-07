@@ -15,6 +15,9 @@ fileWithRenderedImage screenW screenH primitives =
 backgroundColor :: Pixel
 backgroundColor = Pixel 194 204 255
 
+infinityDistance :: Float
+infinityDistance = 10000.0
+
 --TODO: rewrite it in more elegant way
 render :: Primitive a => Int -> Int -> V.Vector a -> Pixels
 render screenW screenH primitives
@@ -22,23 +25,31 @@ render screenW screenH primitives
     | otherwise = 
         V.map (\ray -> 
             let
-                primitiveF = V.filter (\p -> intersect p ray /= NoIntersection) primitives
+                primitiveWithintersection = findNearestIntersectingPrimitive primitives ray infinityDistance (Nothing, NoIntersection)
             in
-                if V.null primitiveF then
-                    backgroundColor
-                else
-                    let
-                        primitive = V.head primitiveF
-                        intersection = intersect primitive ray
-                    in
-                        case intersection of NoIntersection -> backgroundColor
-                                             Intersection t -> calculateColor t primitive ray
+                case primitiveWithintersection of (Just primitive, Intersection t) -> calculateColor t primitive ray
+                                                  _ -> backgroundColor
+                                  
             ) primaryRays
     where
         screen = Screen screenW screenH
         primaryRays = generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
 
-
+findNearestIntersectingPrimitive :: Primitive a => V.Vector a -> Ray -> Float -> (Maybe a, IntersectionResult) -> (Maybe a, IntersectionResult)
+findNearestIntersectingPrimitive primitives ray tNearest result
+    | V.null primitives = result
+    | otherwise = 
+        case intersection of NoIntersection -> proceedWithNoIntersection
+                             Intersection t -> 
+                                if t < tNearest then 
+                                    findInTail t (Just currentPrimitive, intersection)
+                                else 
+                                    proceedWithNoIntersection
+        where
+            currentPrimitive = V.head primitives
+            intersection = intersect currentPrimitive ray
+            findInTail = findNearestIntersectingPrimitive (V.tail primitives) ray
+            proceedWithNoIntersection = findInTail tNearest result
 
 calculateColor :: Primitive a => Float -> a -> Ray -> Pixel
 calculateColor t primitive (Ray rOrigin rDirectory) = 
