@@ -21,7 +21,9 @@ instance Primitive AnyPrimitive where
 
 fileWithRenderedImage :: Int -> Int -> V.Vector AnyPrimitive -> PPMFile
 fileWithRenderedImage screenW screenH primitives = 
-    PPMFile (PPMFileHeader screenW screenH 255) (render screenW screenH primitives)
+    PPMFile (PPMFileHeader screenW screenH 255) (render screen primitives)
+    where
+        screen = Screen screenW screenH
 
 backgroundColor :: Pixel
 backgroundColor = Pixel 194 204 255
@@ -30,8 +32,8 @@ infinityDistance :: Float
 infinityDistance = 10000.0
 
 --TODO: rewrite it in more elegant way
-render :: Int -> Int -> V.Vector AnyPrimitive -> Pixels
-render screenW screenH primitives
+render :: Screen -> V.Vector AnyPrimitive -> Pixels
+render screen primitives
     | V.null primitives = V.map (const backgroundColor) primaryRays
     | otherwise = 
         V.map (\ray -> 
@@ -43,7 +45,6 @@ render screenW screenH primitives
                                   
             ) primaryRays
     where
-        screen = Screen screenW screenH
         primaryRays = generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
 
 findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> (Maybe AnyPrimitive, IntersectionResult) -> (Maybe AnyPrimitive, IntersectionResult)
@@ -51,14 +52,14 @@ findNearestIntersectingPrimitive primitives ray tNearest result
     | V.null primitives = result
     | otherwise = 
         case intersection of NoIntersection -> proceedWithNoIntersection
-                             Intersection t -> 
-                                if t < tNearest then 
-                                    findInTail t (Just currentPrimitive, intersection)
+                             Intersection distance -> 
+                                if distance < tNearest then 
+                                    findInTail distance (Just currentPrimitive, intersection)
                                 else 
                                     proceedWithNoIntersection
         where
             currentPrimitive = V.head primitives
-            intersection = intersect currentPrimitive ray
+            intersection = currentPrimitive `intersect` ray
             findInTail = findNearestIntersectingPrimitive (V.tail primitives) ray
             proceedWithNoIntersection = findInTail tNearest result
 
