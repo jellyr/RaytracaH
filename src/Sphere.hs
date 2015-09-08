@@ -14,7 +14,7 @@ data Sphere = Sphere {
 }
 
 instance Primitive Sphere where
-    intersect (Sphere sphereCenter sphereRdius _) (Ray rayOrigin rayDir) = 
+    intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) = 
         if tca < 0 || dSquared > rSquared || all (< 0) distanceParams then
             NoIntersection
         else
@@ -23,7 +23,7 @@ instance Primitive Sphere where
             vecL = sphereCenter - rayOrigin
             tca = vecL `dot` rayDir
             dSquared = vecL `dot` vecL - tca * tca
-            rSquared = sphereRdius * sphereRdius
+            rSquared = sphereRadius * sphereRadius
             thc = sqrt (rSquared - dSquared)
             distanceParams = [tca - thc, tca + thc]
 

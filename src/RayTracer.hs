@@ -25,12 +25,12 @@ render :: Screen -> V.Vector AnyPrimitive -> Pixels
 render screen primitives
     | V.null primitives = V.map (const backgroundColor) primaryRays
     | otherwise = 
-        V.map (castRayAtPrimitives primitives) primaryRays
+        V.map (traceRay primitives) primaryRays
     where
         primaryRays = generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
 
-castRayAtPrimitives :: V.Vector AnyPrimitive -> Ray -> Pixel
-castRayAtPrimitives primitives ray = 
+traceRay :: V.Vector AnyPrimitive -> Ray -> Pixel
+traceRay primitives ray = 
     case primitiveWithintersection of (Just primitive, Intersection distance) -> calculateColorForHitPrimitive distance primitive ray
                                       _ -> backgroundColor
     where
