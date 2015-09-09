@@ -7,6 +7,7 @@ import qualified Data.Vector as V
 import Data.Time
 
 import Bitmap
+import Camera
 import Color
 import Primitive
 import Sphere
@@ -35,11 +36,14 @@ sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-15.0) (-30.0))
                             AnyPrimitive $ Sphere (Vec.Vec3F (-3.0) 5.0 (-35.0)) 5.0 (Color 0 255 255),
                             AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 (-30.0)) 1.0 (Color 227 166 0)]
 
+sampleCamera :: Camera
+sampleCamera = Camera (Vec.Vec3F 0.0 0.0 20.0) (Vec.Vec3F 0 0 0) (Vec.Vec3F 0 1 0)
+
 main :: IO ()
 main = do
     putStrLn "raytracaH\n"
     startTime <- getCurrentTime
-    writeAsciiPPMFile outputFileName (fileWithRenderedImage imgWidth imgHeight sampleSpheres)
+    writeAsciiPPMFile outputFileName (fileWithRenderedImage imgWidth imgHeight sampleSpheres sampleCamera)
     endTime <- getCurrentTime
     putStr ("Work finished, results saved to " ++ outputFileName ++ ", total time: ")
     print $ diffUTCTime endTime startTime
