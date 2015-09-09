@@ -16,11 +16,13 @@ type PixelsCoords = V.Vector (Int, Int)
 
 generatePrimaryRays :: Screen -> Float -> Camera -> V.Vector Ray
 generatePrimaryRays screen fov camera = 
-    V.map (Ray (pointToCameraSpace camera eyePosition) . normalize . pointToCameraSpace camera) pixelsCameraCoords
+    V.map (createRay camera) pixelsCameraCoords
     where
-        (Camera eyePosition _ _) = camera
         pixels = screenPixels screen
         pixelsCameraCoords = pixelsToCameraCoords screen fov pixels
+
+createRay :: Camera -> Vector3D -> Ray
+createRay camera@(Camera eyePosition _ _) pixelCoords = Ray (pointToCameraSpace camera eyePosition) (normalize (pointToCameraSpace camera pixelCoords))
 
 screenPixels :: Screen -> PixelsCoords
 screenPixels (Screen screenW screenH) = 
