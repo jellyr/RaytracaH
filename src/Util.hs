@@ -1,9 +1,9 @@
 module Util where
 
-import qualified Data.Vec as Vec
+import Data.Vec
 
-type Vector2D = Vec.Packed (Vec.Vec2 Float)
-type Vector3D = Vec.Packed (Vec.Vec3 Float)
+type Vector2D = Packed (Vec2 Float)
+type Vector3D = Packed (Vec3 Float)
 
 deg2rad :: Float -> Float
 deg2rad deg = deg * pi / 180.0

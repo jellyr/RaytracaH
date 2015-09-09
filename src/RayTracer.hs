@@ -1,6 +1,7 @@
 module RayTracer where
 
 import Bitmap
+import Camera
 import Color
 import Screen
 import Primitive
@@ -27,7 +28,7 @@ render screen primitives
     | otherwise = 
         V.map (traceRay primitives) primaryRays
     where
-        primaryRays = generatePrimaryRays screen 30.0 (Vec.Vec3F 0 0 0)
+        primaryRays = generatePrimaryRays screen 30.0 (Camera (Vec.Vec3F 0.0 0.0 20.0) (Vec.Vec3F 0 0 0) (Vec.Vec3F 0 1 0))
 
 traceRay :: V.Vector AnyPrimitive -> Ray -> Pixel
 traceRay primitives ray = 
