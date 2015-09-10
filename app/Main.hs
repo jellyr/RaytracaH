@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Main where
 
 import qualified Data.Vec as Vec
@@ -17,7 +15,7 @@ import RayTracer
 -- TODO: temporary stuff, only for result testing purpose
 -- in future all config and input will be loaded from file
 outputFileName :: String
-outputFileName = "../test.ppm"
+outputFileName = "test.ppm"
 
 imgWidth :: Int
 imgWidth = 640

@@ -1,4 +1,4 @@
-module Ray.Test where
+module RayTest where
 
 import Test.QuickCheck
 
@@ -17,6 +17,3 @@ prop_allPrimaryRaysDirectionNormalized screen fov =
     where
         camera = Camera (Vec.Vec3F 0.0 0.0 10.0) (Vec.Vec3F 0.0 0.0 0.0) (Vec.Vec3F 0.0 1.0 0.0)
         rays = generatePrimaryRays screen fov camera
-
-main :: IO ()
-main = quickCheck prop_allPrimaryRaysDirectionNormalized
