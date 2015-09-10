@@ -22,7 +22,11 @@ generatePrimaryRays screen fov camera =
         pixelsCameraCoords = pixelsToCameraCoords screen fov pixels
 
 createRay :: Camera -> Vector3D -> Ray
-createRay camera@(Camera eyePosition _ _) pixelCoords = Ray (pointToCameraSpace camera eyePosition) (normalize (pointToCameraSpace camera pixelCoords))
+createRay camera@(Camera eyePosition _ _) pixelCoords = 
+    Ray rayOrigin dir
+    where
+        rayOrigin = pointToCameraSpace camera eyePosition
+        dir = normalize (pointToCameraSpace camera pixelCoords)
 
 screenPixels :: Screen -> PixelsCoords
 screenPixels (Screen screenW screenH) = 
