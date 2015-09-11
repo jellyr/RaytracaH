@@ -3,6 +3,7 @@ module RayTracer where
 import Bitmap
 import Camera
 import Color
+import Light
 import Screen
 import Primitive
 import Ray
@@ -10,9 +11,9 @@ import Ray
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
 
-fileWithRenderedImage :: Int -> Int -> V.Vector AnyPrimitive -> Camera -> PPMFile
-fileWithRenderedImage screenW screenH primitives camera = 
-    PPMFile (PPMFileHeader screenW screenH 255) (render screen primitives camera)
+fileWithRenderedImage :: Int -> Int -> V.Vector AnyPrimitive -> V.Vector Light -> Camera -> PPMFile
+fileWithRenderedImage screenW screenH primitives lights camera = 
+    PPMFile (PPMFileHeader screenW screenH 255) (render screen primitives lights camera)
     where
         screen = Screen screenW screenH
 
@@ -22,8 +23,8 @@ backgroundColor = Pixel 194 204 255
 infinityDistance :: Float
 infinityDistance = 10000.0
 
-render :: Screen -> V.Vector AnyPrimitive -> Camera -> Pixels
-render screen primitives camera
+render :: Screen -> V.Vector AnyPrimitive -> V.Vector Light -> Camera -> Pixels
+render screen primitives lights camera
     | V.null primitives = V.map (const backgroundColor) primaryRays
     | otherwise = 
         V.map (traceRay primitives) primaryRays

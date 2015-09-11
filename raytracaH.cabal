@@ -19,6 +19,7 @@ library
                      , Bitmap
                      , Camera
                      , Color
+                     , Light
                      , Plane
                      , Primitive
                      , Ray
