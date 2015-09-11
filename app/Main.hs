@@ -24,8 +24,8 @@ imgWidth = 640
 imgHeight :: Int
 imgHeight = 480
 
-sampleLights :: V.Vector Light
-sampleLights = V.fromList [Directional (Vec.Vec3F 0.0 (-1.0) 0.0) (Color 255 255 255)]
+sampleLight :: Light
+sampleLight = Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 1.0 1.0 1.0)) (Color 255 255 255)
 
 sampleSpheres :: V.Vector AnyPrimitive
 sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-5.0) 0.0) (Vec.Vec3F 0.0 1.0 0.0) (Color 255 0 0), 
@@ -43,7 +43,7 @@ main :: IO ()
 main = do
     putStrLn "raytracaH\n"
     startTime <- getCurrentTime
-    writeAsciiPPMFile outputFileName (fileWithRenderedImage imgWidth imgHeight sampleSpheres sampleLights sampleCamera)
+    writeAsciiPPMFile outputFileName (fileWithRenderedImage imgWidth imgHeight sampleSpheres sampleLight sampleCamera)
     endTime <- getCurrentTime
     putStr ("Work finished, results saved to " ++ outputFileName ++ ", total time: ")
     print $ diffUTCTime endTime startTime
