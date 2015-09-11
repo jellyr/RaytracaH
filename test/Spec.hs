@@ -1,7 +1,9 @@
 import Test.QuickCheck
+import Test.Hspec
 
 import RayTest as RT
 import UtilTest as UT
+import SphereTest as ST
 
 main :: IO ()
 main = do

@@ -35,6 +35,7 @@ render screen primitives light camera
     where
         primaryRays = generatePrimaryRays screen camera
 
+-- TODO: calculate color in more elegant way, take into account light color
 traceRay :: V.Vector AnyPrimitive -> Light -> Ray -> Pixel
 traceRay primitives light ray = 
     case primitiveWithintersection of (Just hitPrimitive, Intersection hitDistance) -> 
@@ -46,7 +47,7 @@ traceRay primitives light ray =
     where
         primitiveWithintersection = findNearestIntersectingPrimitive primitives ray infinityDistance (Nothing, NoIntersection)
 
--- TODO: uwspolnic
+-- TODO: refactor with trace
 traceShadowRay :: V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Ray -> Float -> Bool
 traceShadowRay primitives light hitPrimitive prevRay hitDistance = 
     let
