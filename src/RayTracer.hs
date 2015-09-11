@@ -33,7 +33,7 @@ render screen primitives light camera
     | otherwise = 
         V.map (traceRay primitives light) primaryRays
     where
-        primaryRays = generatePrimaryRays screen 30.0 camera
+        primaryRays = generatePrimaryRays screen camera
 
 traceRay :: V.Vector AnyPrimitive -> Light -> Ray -> Pixel
 traceRay primitives light ray = 

@@ -7,7 +7,8 @@ import Util
 data Camera = Camera {
     position :: Vector3D,
     target :: Vector3D,
-    up :: Vector3D
+    up :: Vector3D,
+    fov :: Float
 }
 
 pointToCameraSpace :: Camera -> Vector3D -> Vector3D

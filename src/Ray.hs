@@ -14,15 +14,15 @@ data Ray = Ray {
 
 type PixelsCoords = V.Vector (Int, Int)
 
-generatePrimaryRays :: Screen -> Float -> Camera -> V.Vector Ray
-generatePrimaryRays screen fov camera = 
+generatePrimaryRays :: Screen -> Camera -> V.Vector Ray
+generatePrimaryRays screen camera = 
     V.map (createRay camera) pixelsCameraCoords
     where
         pixels = screenPixels screen
-        pixelsCameraCoords = pixelsToCameraCoords screen fov pixels
+        pixelsCameraCoords = pixelsToCameraCoords screen (fov camera) pixels
 
 createRay :: Camera -> Vector3D -> Ray
-createRay camera@(Camera eyePosition _ _) pixelCoords = 
+createRay camera@(Camera eyePosition _ _ _) pixelCoords = 
     Ray rayOrigin dir
     where
         rayOrigin = pointToCameraSpace camera eyePosition

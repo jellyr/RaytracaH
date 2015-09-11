@@ -37,7 +37,7 @@ sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-5.0) 0.0) (Vec
                             AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 0.0) 1.0 (Color 227 166 0)]
 
 sampleCamera :: Camera
-sampleCamera = Camera (Vec.Vec3F 0.0 5.0 20.0) (Vec.Vec3F 0 0 0) (Vec.Vec3F 0 1 0)
+sampleCamera = Camera (Vec.Vec3F 0.0 5.0 20.0) (Vec.Vec3F 0 0 0) (Vec.Vec3F 0 1 0) 30.0
 
 main :: IO ()
 main = do
