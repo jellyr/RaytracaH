@@ -23,9 +23,6 @@ fileWithRenderedImage screenW screenH primitives lights camera =
 backgroundColor :: Color Int
 backgroundColor = Color 194 204 255
 
-shadowColor :: Color Int
-shadowColor = Color 0 0 0
-
 infinityDistance :: Float
 infinityDistance = 10000.0
 
@@ -49,14 +46,13 @@ traceRay primitives lights ray =
 
 sumLightsEffect :: V.Vector Light -> V.Vector AnyPrimitive -> AnyPrimitive -> Float -> Ray -> Pixel
 sumLightsEffect lights primitives hitPrimitive hitDistance hitRay = 
-    toPixel $ V.foldl (\acc c -> sumColors acc c) (Color 0 0 0) colors
+    toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (color hitPrimitive)
     where
-        colors = 
-            V.map (\light ->
+        diffuse = V.sum $ V.map (\light ->
                 if isHitPrimitiveInShadow primitives light hitPrimitive hitRay hitDistance == True then
-                  shadowColor
+                    0.0
                 else
-                  calculateColorForHitPrimitive light hitDistance hitPrimitive hitRay
+                    0.5--calculateDiffuseForHitPrimitive light hitDistance hitPrimitive hitRay
             ) lights
 
 isHitPrimitiveInShadow :: V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Ray -> Float -> Bool
@@ -78,16 +74,16 @@ createShadowRay light prevRay hitDistance hitPrimitive =
         vecL = lightDir light
 
 findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection AnyPrimitive
-findNearestIntersectingPrimitive primitives ray tNearest = 
-    findNearestIntersectingPrimitiveIter primitives ray tNearest (PrimitiveIntersection Nothing NoIntersection)
+findNearestIntersectingPrimitive primitives ray distanceNearest = 
+    findNearestIntersectingPrimitiveIter primitives ray distanceNearest (PrimitiveIntersection Nothing NoIntersection)
 
 findNearestIntersectingPrimitiveIter :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection AnyPrimitive -> PrimitiveIntersection AnyPrimitive
-findNearestIntersectingPrimitiveIter primitives ray tNearest result
+findNearestIntersectingPrimitiveIter primitives ray distanceNearest result
     | V.null primitives = result
     | otherwise = 
         case intersection of NoIntersection -> proceedWithNoIntersection
                              Intersection distance -> 
-                                 if distance < tNearest then 
+                                 if distance < distanceNearest then 
                                      findInTail distance (PrimitiveIntersection (Just currentPrimitive) intersection)
                                  else 
                                      proceedWithNoIntersection
@@ -95,17 +91,16 @@ findNearestIntersectingPrimitiveIter primitives ray tNearest result
             currentPrimitive = V.head primitives
             intersection = currentPrimitive `intersect` ray
             findInTail = findNearestIntersectingPrimitiveIter (V.tail primitives) ray
-            proceedWithNoIntersection = findInTail tNearest result
+            proceedWithNoIntersection = findInTail distanceNearest result
 
-calculateColorForHitPrimitive :: Light -> Float -> AnyPrimitive -> Ray -> Color Int
-calculateColorForHitPrimitive light hitDistance hitPrimitive ray@(Ray rOrigin rDirectory) = 
+calculateDiffuseForHitPrimitive :: Light -> Float -> AnyPrimitive -> Ray -> Float
+calculateDiffuseForHitPrimitive light hitDistance hitPrimitive ray =
     let
         pHit = rayHitPoint ray hitDistance
         nHit = normalAtHitPoint hitPrimitive pHit
-        intensity = lightIntensity light * max 0.0 (Vec.dot nHit (rDirectory * (-1.0)))
-        primitiveColor = fmap (\c -> ceiling (intensity * fromIntegral c)) (color hitPrimitive)
+        diffuse = lightIntensity light * max 0.0 (Vec.dot nHit (-1.0 * lightDir light))
     in
-        primitiveColor
+        diffuse
 
 rayHitPoint :: Ray -> Float -> Vector3D
 rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
