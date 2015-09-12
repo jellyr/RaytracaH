@@ -48,12 +48,12 @@ sumLightsEffect :: V.Vector Light -> V.Vector AnyPrimitive -> AnyPrimitive -> Fl
 sumLightsEffect lights primitives hitPrimitive hitDistance hitRay = 
     toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (color hitPrimitive)
     where
-        diffuse = V.sum $ V.map (\light ->
+        diffuse = min 1.0 (V.sum $ V.map (\light ->
                 if isHitPrimitiveInShadow primitives light hitPrimitive hitRay hitDistance == True then
                     0.0
                 else
-                    0.5--calculateDiffuseForHitPrimitive light hitDistance hitPrimitive hitRay
-            ) lights
+                    calculateDiffuseForHitPrimitive light hitDistance hitPrimitive hitRay
+            ) lights)
 
 isHitPrimitiveInShadow :: V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Ray -> Float -> Bool
 isHitPrimitiveInShadow primitives light hitPrimitive prevRay hitDistance = 
