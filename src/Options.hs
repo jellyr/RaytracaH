@@ -1,4 +1,4 @@
-module Option where
+module Options where
 
 import Color
 

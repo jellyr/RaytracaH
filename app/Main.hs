@@ -10,6 +10,7 @@ import Color
 import Light
 import Primitive
 import Sphere
+import Options
 import Plane
 import RayTracer
 
@@ -18,11 +19,11 @@ import RayTracer
 outputFileName :: String
 outputFileName = "test.ppm"
 
-imgWidth :: Int
-imgWidth = 640
+outputImgWidth :: Int
+outputImgWidth = 640
 
-imgHeight :: Int
-imgHeight = 480
+outputImgHeight :: Int
+outputImgHeight = 480
 
 sampleLights :: V.Vector Light
 sampleLights = V.fromList [Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 0.0 1.0 1.0)) 0.5 (Color 255 255 255),
@@ -41,11 +42,14 @@ sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-5.0) 0.0) (Vec
 sampleCamera :: Camera
 sampleCamera = Camera (Vec.Vec3F 0.0 2.0 20.0) (Vec.Vec3F 0 0 0) (Vec.Vec3F 0 1 0) 30.0
 
+options :: RayTracerOptions
+options = RayTracerOptions outputImgWidth outputImgHeight (Color 194 204 255) 10000.0 0.0001
+
 main :: IO ()
 main = do
     putStrLn "raytracaH\n"
     startTime <- getCurrentTime
-    writeAsciiPPMFile outputFileName (fileWithRenderedImage imgWidth imgHeight sampleSpheres sampleLights sampleCamera)
+    writeAsciiPPMFile outputFileName (fileWithRenderedImage sampleSpheres sampleLights sampleCamera options)
     endTime <- getCurrentTime
     putStr ("Work finished, results saved to " ++ outputFileName ++ ", total time: ")
     print $ diffUTCTime endTime startTime

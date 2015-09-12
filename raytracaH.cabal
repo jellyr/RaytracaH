@@ -20,6 +20,7 @@ library
                      , Camera
                      , Color
                      , Light
+                     , Options
                      , Plane
                      , Primitive
                      , Ray
