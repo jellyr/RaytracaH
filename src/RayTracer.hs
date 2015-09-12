@@ -4,10 +4,11 @@ import Bitmap
 import Camera
 import Color
 import Light
-import Screen
 import Options
 import Primitive
 import Ray
+import Scene
+import Screen
 import Util
 
 import qualified Data.Vec as Vec
@@ -15,42 +16,42 @@ import qualified Data.Vector as V
 
 data PrimitiveIntersection a = PrimitiveIntersection (Maybe a) IntersectionResult
 
-fileWithRenderedImage :: V.Vector AnyPrimitive -> V.Vector Light -> Camera -> RayTracerOptions -> PPMFile
-fileWithRenderedImage primitives lights camera options = 
-    PPMFile (PPMFileHeader screenW screenH 255) (render screen primitives lights camera options)
+fileWithRenderedImage :: Camera -> RayTracerOptions -> Scene -> PPMFile
+fileWithRenderedImage camera options scene = 
+    PPMFile (PPMFileHeader screenW screenH 255) (render screen camera options scene)
     where
         screenW = imgWidth options
         screenH = imgHeight options
         screen = Screen screenW screenH
 
-render :: Screen -> V.Vector AnyPrimitive -> V.Vector Light -> Camera -> RayTracerOptions -> Pixels
-render screen primitives lights camera options
-    | V.null primitives = V.map (const $ toPixel (backgroundColor options)) primaryRays
+render :: Screen -> Camera -> RayTracerOptions -> Scene -> Pixels
+render screen camera options scene
+    | V.null (sceneObjects scene) = V.map (const $ toPixel (backgroundColor options)) primaryRays
     | otherwise = 
-        V.map (traceRay options primitives lights) primaryRays
+        V.map (traceRay options scene) primaryRays
     where
         primaryRays = generatePrimaryRays screen camera
 
 -- TODO: calculate color in more elegant way, take into account light color
-traceRay :: RayTracerOptions -> V.Vector AnyPrimitive -> V.Vector Light -> Ray -> Pixel
-traceRay options primitives lights ray = 
+traceRay :: RayTracerOptions -> Scene -> Ray -> Pixel
+traceRay options scene ray = 
     case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
-                                          sumLightsEffect options lights primitives hitPrimitive hitDistance ray
+                                          sumLightsEffect options scene hitPrimitive hitDistance ray
                                       _ -> 
                                           toPixel $ backgroundColor options
     where
-        primitiveWithintersection = findNearestIntersectingPrimitive primitives ray (infinityDistance options)
+        primitiveWithintersection = findNearestIntersectingPrimitive (sceneObjects scene) ray (infinityDistance options)
 
-sumLightsEffect :: RayTracerOptions -> V.Vector Light -> V.Vector AnyPrimitive -> AnyPrimitive -> Float -> Ray -> Pixel
-sumLightsEffect options lights primitives hitPrimitive hitDistance hitRay = 
+sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Float -> Ray -> Pixel
+sumLightsEffect options scene hitPrimitive hitDistance hitRay = 
     toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (color hitPrimitive)
     where
         diffuse = min 1.0 (V.sum $ V.map (\light ->
-                if isHitPrimitiveInShadow options primitives light hitPrimitive hitRay hitDistance == True then
+                if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitRay hitDistance == True then
                     0.0
                 else
                     calculateDiffuseForHitPrimitive light hitDistance hitPrimitive hitRay
-            ) lights)
+            ) (sceneLights scene))
 
 isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Ray -> Float -> Bool
 isHitPrimitiveInShadow options primitives light hitPrimitive prevRay hitDistance = 

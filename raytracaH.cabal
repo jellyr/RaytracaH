@@ -24,6 +24,7 @@ library
                      , Plane
                      , Primitive
                      , Ray
+                     , Scene
                      , Screen
                      , Sphere
                      , Util
