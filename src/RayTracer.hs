@@ -92,12 +92,11 @@ findNearestIntersectingPrimitiveIter primitives ray distanceNearest result
 
 calculateDiffuseForHitPrimitive :: Light -> Float -> AnyPrimitive -> Ray -> Float
 calculateDiffuseForHitPrimitive light hitDistance hitPrimitive ray =
-    let
+    diffuse
+    where
         pHit = rayHitPoint ray hitDistance
         nHit = normalAtHitPoint hitPrimitive pHit
         diffuse = lightIntensity light * max 0.0 (Vec.dot nHit (-1.0 * lightDir light))
-    in
-        diffuse
 
 rayHitPoint :: Ray -> Float -> Vector3D
 rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
