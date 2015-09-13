@@ -22,10 +22,10 @@ outputFileName :: String
 outputFileName = "test.ppm"
 
 outputImgWidth :: Int
-outputImgWidth = 1280
+outputImgWidth = 640
 
 outputImgHeight :: Int
-outputImgHeight = 720
+outputImgHeight = 480
 
 sampleLights :: V.Vector Light
 sampleLights = V.fromList [Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 0.0 1.0 1.0)) 0.8 (Color 255 255 255),

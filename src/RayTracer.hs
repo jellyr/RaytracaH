@@ -36,38 +36,40 @@ render screen camera options scene
 traceRay :: RayTracerOptions -> Scene -> Ray -> Pixel
 traceRay options scene ray = 
     case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
-                                          sumLightsEffect options scene hitPrimitive hitDistance ray
+                                          sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance)
                                       _ -> 
                                           toPixel $ backgroundColor options
     where
         primitiveWithintersection = findNearestIntersectingPrimitive (sceneObjects scene) ray (infinityDistance options)
 
-sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Float -> Ray -> Pixel
-sumLightsEffect options scene hitPrimitive hitDistance hitRay = 
+rayHitPoint :: Ray -> Float -> Vector3D
+rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
+
+sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Pixel
+sumLightsEffect options scene hitPrimitive hitPoint = 
     toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (materialColor $ material hitPrimitive)
     where
         diffuse = min 1.0 (V.sum $ V.map (\light ->
-                if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitRay hitDistance == True then
+                if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitPoint == True then
                     0.0
                 else
-                    calculateDiffuseForHitPrimitive light hitDistance hitPrimitive hitRay
+                    calculateDiffuseForHitPrimitive light hitPrimitive hitPoint
             ) (sceneLights scene))
 
-isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Ray -> Float -> Bool
-isHitPrimitiveInShadow options primitives light hitPrimitive prevRay hitDistance = 
+isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Vector3D -> Bool
+isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint = 
     let
-        shadowRay = createShadowRay options light prevRay hitDistance hitPrimitive
+        shadowRay = createShadowRay options light hitPrimitive hitPoint
         primitiveWithintersection = findNearestIntersectingPrimitive primitives shadowRay (infinityDistance options)
     in
         case primitiveWithintersection of PrimitiveIntersection _ (Intersection _) -> True
                                           _ -> False
 
-createShadowRay :: RayTracerOptions -> Light -> Ray -> Float -> AnyPrimitive -> Ray
-createShadowRay options light prevRay hitDistance hitPrimitive = 
-    Ray (pHit + multvs nHit (shadowBias options)) (-vecL)
+createShadowRay :: RayTracerOptions -> Light -> AnyPrimitive -> Vector3D -> Ray
+createShadowRay options light hitPrimitive hitPoint = 
+    Ray (hitPoint + multvs nHit (shadowBias options)) (-vecL)
     where
-        pHit = rayHitPoint prevRay hitDistance
-        nHit = normalAtHitPoint hitPrimitive pHit
+        nHit = normalAtHitPoint hitPrimitive hitPoint
         vecL = lightDir light
 
 findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection AnyPrimitive
@@ -90,13 +92,9 @@ findNearestIntersectingPrimitiveIter primitives ray distanceNearest result
             findInTail = findNearestIntersectingPrimitiveIter (V.tail primitives) ray
             proceedWithNoIntersection = findInTail distanceNearest result
 
-calculateDiffuseForHitPrimitive :: Light -> Float -> AnyPrimitive -> Ray -> Float
-calculateDiffuseForHitPrimitive light hitDistance hitPrimitive ray =
+calculateDiffuseForHitPrimitive :: Light -> AnyPrimitive -> Vector3D -> Float
+calculateDiffuseForHitPrimitive light hitPrimitive hitPoint =
     diffuse
     where
-        pHit = rayHitPoint ray hitDistance
-        nHit = normalAtHitPoint hitPrimitive pHit
+        nHit = normalAtHitPoint hitPrimitive hitPoint
         diffuse = lightIntensity light * max 0.0 (Vec.dot nHit (-1.0 * lightDir light))
-
-rayHitPoint :: Ray -> Float -> Vector3D
-rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
