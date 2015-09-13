@@ -15,7 +15,7 @@ import Util
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
 
-data PrimitiveIntersection a = PrimitiveIntersection (Maybe a) IntersectionResult
+data PrimitiveIntersection = PrimitiveIntersection (Maybe AnyPrimitive) IntersectionResult
 
 fileWithRenderedImage :: Camera -> RayTracerOptions -> Scene -> PPMFile
 fileWithRenderedImage camera options scene = 
@@ -36,7 +36,7 @@ render screen camera options scene
 traceRay :: RayTracerOptions -> Scene -> Ray -> Pixel
 traceRay options scene ray = 
     case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
-                                          sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance)
+                                          sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
                                       _ -> 
                                           toPixel $ backgroundColor options
     where
@@ -45,16 +45,24 @@ traceRay options scene ray =
 rayHitPoint :: Ray -> Float -> Vector3D
 rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
 
-sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Pixel
-sumLightsEffect options scene hitPrimitive hitPoint = 
-    toPixel $ fmap (\c -> diffuse * c) (materialColor $ material hitPrimitive)
+sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Vector3D -> Pixel
+sumLightsEffect options scene hitPrimitive hitPoint rayDirection = 
+    toPixel $ fmap (\c -> min 1.0 (diffuse * c + specular)) (materialColor $ material hitPrimitive)
     where
-        diffuse = min 1.0 (V.sum $ V.map (\light ->
-                if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitPoint == True then
-                    0.0
-                else
-                    calculateDiffuseForHitPrimitive light hitPrimitive hitPoint
-            ) (sceneLights scene))
+        (diffuse, specular) = phongFactors options scene hitPrimitive hitPoint rayDirection
+
+-- TODO: refactor it into smaller functions
+phongFactors :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Vector3D -> (Float, Float)
+phongFactors options scene hitPrimitive hitPoint rayDirection = 
+    V.foldl (\(diffuse, specular) light ->
+        if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitPoint == True then
+            (diffuse, specular)
+        else
+            case material hitPrimitive of DiffusiveMaterial _ ->
+                                              (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), specular)
+                                          DiffusiveAndSpecularMaterial _ _ ->
+                                              (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), min 1.0 (specular + calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection))
+    ) (0.0, 0.0) (sceneLights scene)
 
 isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Vector3D -> Bool
 isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint = 
@@ -72,15 +80,16 @@ createShadowRay options light hitPrimitive hitPoint =
         nHit = normalAtHitPoint hitPrimitive hitPoint
         vecL = lightDir light
 
-findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection AnyPrimitive
+findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection
 findNearestIntersectingPrimitive primitives ray distanceNearest = 
     findNearestIntersectingPrimitiveIter primitives ray distanceNearest (PrimitiveIntersection Nothing NoIntersection)
 
-findNearestIntersectingPrimitiveIter :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection AnyPrimitive -> PrimitiveIntersection AnyPrimitive
+findNearestIntersectingPrimitiveIter :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection -> PrimitiveIntersection
 findNearestIntersectingPrimitiveIter primitives ray distanceNearest result
     | V.null primitives = result
     | otherwise = 
-        case intersection of NoIntersection -> proceedWithNoIntersection
+        case intersection of NoIntersection -> 
+                                 proceedWithNoIntersection
                              Intersection distance -> 
                                  if distance < distanceNearest then 
                                      findInTail distance (PrimitiveIntersection (Just currentPrimitive) intersection)
@@ -98,3 +107,18 @@ calculateDiffuseForHitPrimitive light hitPrimitive hitPoint =
     where
         nHit = normalAtHitPoint hitPrimitive hitPoint
         diffuse = lightIntensity light * max 0.0 (Vec.dot nHit (-1.0 * lightDir light))
+
+calculateSpecularForHitPrimitive :: Light -> AnyPrimitive -> Vector3D -> Vector3D -> Float
+calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection =
+    specular
+    where
+        nHit = normalAtHitPoint hitPrimitive hitPoint
+        rVec = reflect (lightDir light) nHit
+        n = case material hitPrimitive of DiffusiveAndSpecularMaterial _ n -> 
+                                              (max 0.0 (Vec.dot rVec (-1.0 * rayDirection))) ** n
+                                          _ -> 
+                                              0.0
+        specular = lightIntensity light * n
+
+reflect :: Vector3D -> Vector3D -> Vector3D
+reflect i n = i - (multvs n (2 * (Vec.dot i n)))

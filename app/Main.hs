@@ -46,9 +46,9 @@ sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-4.0) 0.0) (Vec
                             AnyPrimitive $ Sphere (Vec.Vec3F (-5.0) 0.0 (-5.0)) 1.0 diffusiveRedMaterial,
                             AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 (-5.0)) 2.0 diffusiveGreenMaterial,
                             AnyPrimitive $ Sphere (Vec.Vec3F 4.0 0.0 (-3.0)) 1.0 diffusiveBlueMaterial,
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 5.0 (-5.0)) 2.0 (DiffusiveMaterial (Color 1 1 1)),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 3.0 (-7.0)) 2.0 (DiffusiveMaterial (Color 0 1 1)),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 0.0) 1.0 (DiffusiveMaterial (Color (227.0/255.0) (166.0/255.0) 0))]
+                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 5.0 (-5.0)) 2.0 (DiffusiveAndSpecularMaterial (Color 1 1 1) 5.0),
+                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 3.0 (-10.0)) 2.0 (DiffusiveMaterial (Color 0 1 1)),
+                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 0.0) 1.0 (DiffusiveAndSpecularMaterial (Color (227.0/255.0) (166.0/255.0) 0) 5.0)]
 
 sampleScene :: Scene
 sampleScene = Scene sampleLights sampleSpheres
