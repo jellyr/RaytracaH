@@ -27,9 +27,9 @@ outputImgHeight :: Int
 outputImgHeight = 480
 
 sampleLights :: V.Vector Light
-sampleLights = V.fromList [Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 0.0 1.0 1.0)) 0.5 (Color 255 255 255),
-                           Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 1.0 1.0 0.0)) 0.2 (Color 255 255 255),
-                           Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 1.0 1.0 1.0)) 0.5 (Color 255 255 255)]
+sampleLights = V.fromList [Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 0.0 1.0 1.0)) 0.8 (Color 255 255 255),
+                           Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 1.0 1.0 0.0)) 0.1 (Color 255 255 255),
+                           Directional (Vec.normalize $ (Vec.Vec3F 0.0 0.0 0.0) - (Vec.Vec3F 1.0 1.0 1.0)) 0.1 (Color 255 255 255)]
 
 sampleSpheres :: V.Vector AnyPrimitive
 sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-5.0) 0.0) (Vec.Vec3F 0.0 1.0 0.0) (Color 255 0 0), 
