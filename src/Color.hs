@@ -7,5 +7,7 @@ data Color a = Color a a a
 instance Functor Color where
     fmap f (Color rr gg bb) = Color (f rr) (f gg) (f bb)
 
-toPixel :: Color Int -> Pixel
-toPixel (Color rr gg bb) = Pixel rr gg bb
+toPixel :: Color Float -> Pixel
+toPixel (Color rr gg bb) = Pixel (componentToPixelRange rr) (componentToPixelRange gg) (componentToPixelRange bb)
+    where
+        componentToPixelRange c = ceiling $ c * 255.0

@@ -47,7 +47,7 @@ rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory dist
 
 sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Pixel
 sumLightsEffect options scene hitPrimitive hitPoint = 
-    toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (materialColor $ material hitPrimitive)
+    toPixel $ fmap (\c -> diffuse * c) (materialColor $ material hitPrimitive)
     where
         diffuse = min 1.0 (V.sum $ V.map (\light ->
                 if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitPoint == True then

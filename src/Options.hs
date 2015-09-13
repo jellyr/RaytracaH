@@ -5,7 +5,7 @@ import Color
 data RayTracerOptions = RayTracerOptions {
     imgWidth :: Int,
     imgHeight :: Int,
-    backgroundColor :: Color Int,
+    backgroundColor :: Color Float,
     infinityDistance :: Float,
     shadowBias :: Float
 }
