@@ -5,6 +5,7 @@ import Data.Vec
 import Color
 import Util
 
+-- TODO: use light color in calculations
 data Light = Directional Vector3D Float (Color Int)
 
 lightDir :: Light -> Vector3D

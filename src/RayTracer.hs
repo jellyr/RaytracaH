@@ -4,6 +4,7 @@ import Bitmap
 import Camera
 import Color
 import Light
+import Material
 import Options
 import Primitive
 import Ray
@@ -32,7 +33,6 @@ render screen camera options scene
     where
         primaryRays = generatePrimaryRays screen camera
 
--- TODO: calculate color in more elegant way, take into account light color
 traceRay :: RayTracerOptions -> Scene -> Ray -> Pixel
 traceRay options scene ray = 
     case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
@@ -44,7 +44,7 @@ traceRay options scene ray =
 
 sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Float -> Ray -> Pixel
 sumLightsEffect options scene hitPrimitive hitDistance hitRay = 
-    toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (color hitPrimitive)
+    toPixel $ fmap (\c -> ceiling (diffuse * fromIntegral c)) (materialColor $ material hitPrimitive)
     where
         diffuse = min 1.0 (V.sum $ V.map (\light ->
                 if isHitPrimitiveInShadow options (sceneObjects scene) light hitPrimitive hitRay hitDistance == True then

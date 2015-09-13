@@ -2,7 +2,7 @@ module Plane where
 
 import Data.Vec (dot)
 
-import Color
+import Material
 import Primitive
 import Ray
 import Util
@@ -10,7 +10,7 @@ import Util
 data Plane = Plane {
     point :: Vector3D,
     normal :: Vector3D,
-    color :: Color Int
+    material :: Material
 }
 
 instance Primitive Plane where
@@ -25,5 +25,5 @@ instance Primitive Plane where
     normalAtHitPoint (Plane _ planeNormal _) _ =
         planeNormal
 
-    color (Plane _ _ planeColor) = 
-        planeColor
+    material (Plane _ _ planeMaterial) = 
+        planeMaterial

@@ -2,7 +2,7 @@ module Sphere where
 
 import Data.Vec (dot, normalize)
 
-import Color
+import Material
 import Primitive
 import Ray
 import Util
@@ -10,7 +10,7 @@ import Util
 data Sphere = Sphere {
     center :: Vector3D,
     radius :: Float,
-    color :: Color Int
+    material :: Material
 }
 
 instance Primitive Sphere where
@@ -30,5 +30,5 @@ instance Primitive Sphere where
     normalAtHitPoint (Sphere sphereCenter _ _) hitPoint =
         normalize (hitPoint - sphereCenter)
 
-    color (Sphere _ _ sphereColor) = 
-        sphereColor
+    material (Sphere _ _ sphereMaterial) =
+        sphereMaterial
