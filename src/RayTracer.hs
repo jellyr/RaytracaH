@@ -33,27 +33,36 @@ render screen camera options scene
     where
         primaryRays = generatePrimaryRays screen camera
 
--- TODO: refactor it and split into smaller functions
 traceRay :: RayTracerOptions -> Scene -> Int -> Ray -> Color Float
 traceRay options scene depth ray
     | depth >= 5 = backgroundColor options
     | otherwise = case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
-                                                        case material hitPrimitive of (ReflectiveMaterial _ kR) ->
-                                                                                          let
-                                                                                              hitPoint = rayHitPoint ray hitDistance
-                                                                                              nHit = normalAtHitPoint hitPrimitive hitPoint
-                                                                                              reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
-                                                                                              reflectRayDirection = reflect (direction ray) nHit
-                                                                                              recursiveColor = fmap (\c -> kR * c) $ traceRay options scene (depth + 1) (Ray reflectRayOrigin reflectRayDirection)
-                                                                                              lightsColor = sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
-                                                                                          in
-                                                                                              sumColors recursiveColor lightsColor
-                                                                                      _ ->
-                                                                                          sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
+                                                        traceRayBasedOnMaterial options scene depth ray hitPrimitive hitDistance
                                                     _ -> 
                                                         backgroundColor options
                   where
                       primitiveWithintersection = findNearestIntersectingPrimitive (sceneObjects scene) ray (infinityDistance options)
+
+-- TODO: remove duplication and number of parameters
+traceRayBasedOnMaterial :: RayTracerOptions -> Scene -> Int -> Ray -> AnyPrimitive -> Float -> Color Float
+traceRayBasedOnMaterial options scene prevDepth ray hitPrimitive hitDistance =
+    case material hitPrimitive of ReflectiveMaterial _ kR ->
+                                      traceRayForReflectiveSurface options scene prevDepth ray hitPrimitive hitDistance kR
+                                  _ ->
+                                      sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
+
+-- TODO: same as for function above
+traceRayForReflectiveSurface :: RayTracerOptions -> Scene -> Int -> Ray -> AnyPrimitive -> Float -> Float -> Color Float
+traceRayForReflectiveSurface options scene prevDepth ray hitPrimitive hitDistance kR =
+    let
+        hitPoint = rayHitPoint ray hitDistance
+        nHit = normalAtHitPoint hitPrimitive hitPoint
+        reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
+        reflectRayDirection = reflect (direction ray) nHit
+        recursiveColor = fmap (\c -> kR * c) $ traceRay options scene (prevDepth + 1) (Ray reflectRayOrigin reflectRayDirection)
+        lightsColor = sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
+    in
+        sumColors recursiveColor lightsColor
 
 rayHitPoint :: Ray -> Float -> Vector3D
 rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
