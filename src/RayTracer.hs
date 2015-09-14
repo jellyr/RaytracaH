@@ -33,18 +33,21 @@ render screen camera options scene
     where
         primaryRays = generatePrimaryRays screen camera
 
+-- TODO: refactor it and split into smaller functions
 traceRay :: RayTracerOptions -> Scene -> Int -> Ray -> Color Float
 traceRay options scene depth ray
     | depth >= 5 = backgroundColor options
     | otherwise = case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
-                                                        case material hitPrimitive of ReflectiveMaterial ->
+                                                        case material hitPrimitive of (ReflectiveMaterial _ kR) ->
                                                                                           let
                                                                                               hitPoint = rayHitPoint ray hitDistance
                                                                                               nHit = normalAtHitPoint hitPrimitive hitPoint
                                                                                               reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
                                                                                               reflectRayDirection = reflect (direction ray) nHit
+                                                                                              recursiveColor = fmap (\c -> kR * c) $ traceRay options scene (depth + 1) (Ray reflectRayOrigin reflectRayDirection)
+                                                                                              lightsColor = sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
                                                                                           in
-                                                                                              fmap (\c -> 0.8 * c) $ traceRay options scene (depth + 1) (Ray reflectRayOrigin reflectRayDirection)
+                                                                                              sumColors recursiveColor lightsColor
                                                                                       _ ->
                                                                                           sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
                                                     _ -> 
@@ -72,8 +75,8 @@ phongFactors options scene hitPrimitive hitPoint rayDirection =
                                               (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), specular)
                                           DiffusiveAndSpecularMaterial _ _ ->
                                               (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), min 1.0 (specular + calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection))
-                                          ReflectiveMaterial ->
-                                              (diffuse, specular)
+                                          ReflectiveMaterial _ _ ->
+                                              (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), specular)
     ) (0.0, 0.0) (sceneLights scene)
 
 isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Vector3D -> Bool
