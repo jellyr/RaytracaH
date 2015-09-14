@@ -29,25 +29,35 @@ render :: Screen -> Camera -> RayTracerOptions -> Scene -> Pixels
 render screen camera options scene
     | V.null (sceneObjects scene) = V.map (const $ toPixel (backgroundColor options)) primaryRays
     | otherwise = 
-        V.map (traceRay options scene) primaryRays
+        V.map (\ray -> toPixel $ traceRay options scene 1 ray) primaryRays
     where
         primaryRays = generatePrimaryRays screen camera
 
-traceRay :: RayTracerOptions -> Scene -> Ray -> Pixel
-traceRay options scene ray = 
-    case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
-                                          sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
-                                      _ -> 
-                                          toPixel $ backgroundColor options
-    where
-        primitiveWithintersection = findNearestIntersectingPrimitive (sceneObjects scene) ray (infinityDistance options)
+traceRay :: RayTracerOptions -> Scene -> Int -> Ray -> Color Float
+traceRay options scene depth ray
+    | depth >= 5 = backgroundColor options
+    | otherwise = case primitiveWithintersection of PrimitiveIntersection (Just hitPrimitive) (Intersection hitDistance) -> 
+                                                        case material hitPrimitive of ReflectiveMaterial ->
+                                                                                          let
+                                                                                              hitPoint = rayHitPoint ray hitDistance
+                                                                                              nHit = normalAtHitPoint hitPrimitive hitPoint
+                                                                                              reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
+                                                                                              reflectRayDirection = reflect (direction ray) nHit
+                                                                                          in
+                                                                                              fmap (\c -> 0.8 * c) $ traceRay options scene (depth + 1) (Ray reflectRayOrigin reflectRayDirection)
+                                                                                      _ ->
+                                                                                          sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (direction ray)
+                                                    _ -> 
+                                                        backgroundColor options
+                  where
+                      primitiveWithintersection = findNearestIntersectingPrimitive (sceneObjects scene) ray (infinityDistance options)
 
 rayHitPoint :: Ray -> Float -> Vector3D
 rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
 
-sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Vector3D -> Pixel
+sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Vector3D -> Color Float
 sumLightsEffect options scene hitPrimitive hitPoint rayDirection = 
-    toPixel $ fmap (\c -> min 1.0 (diffuse * c + specular)) (materialColor $ material hitPrimitive)
+    fmap (\c -> min 1.0 (diffuse * c + specular)) (materialColor $ material hitPrimitive)
     where
         (diffuse, specular) = phongFactors options scene hitPrimitive hitPoint rayDirection
 
@@ -62,6 +72,8 @@ phongFactors options scene hitPrimitive hitPoint rayDirection =
                                               (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), specular)
                                           DiffusiveAndSpecularMaterial _ _ ->
                                               (min 1.0 (diffuse + calculateDiffuseForHitPrimitive light hitPrimitive hitPoint), min 1.0 (specular + calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection))
+                                          ReflectiveMaterial ->
+                                              (diffuse, specular)
     ) (0.0, 0.0) (sceneLights scene)
 
 isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Vector3D -> Bool
