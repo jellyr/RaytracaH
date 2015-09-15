@@ -7,6 +7,8 @@ import Primitive
 import Ray
 import Util
 
+import Debug.Trace
+
 data Sphere = Sphere {
     center :: Vector3D,
     radius :: Float,
@@ -15,10 +17,10 @@ data Sphere = Sphere {
 
 instance Primitive Sphere where
     intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) = 
-        if tca < 0 || dSquared > rSquared || all (< 0) distanceParams then
+        if tca < 0 || dSquared > rSquared || all (< 0.0) distanceParams || any (isNaN) distanceParams then
             NoIntersection
         else
-            Intersection (minimum (filter (> 0) distanceParams))
+            Intersection (minimum (filter (>= 0.0) distanceParams))
         where
             vecL = sphereCenter - rayOrigin
             tca = vecL `dot` rayDir
