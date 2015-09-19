@@ -1,19 +1,20 @@
 module Sphere where
 
+import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
+
 import Data.Vec (dot, normalize)
 
+import Color
 import Material
+import Math
 import Primitive
 import Ray
-import Util
-
-import Debug.Trace
 
 data Sphere = Sphere {
     center :: Vector3D,
     radius :: Float,
     material :: Material
-}
+} deriving (Show)
 
 instance Primitive Sphere where
     intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) = 
@@ -34,3 +35,9 @@ instance Primitive Sphere where
 
     material (Sphere _ _ sphereMaterial) =
         sphereMaterial
+
+instance Arbitrary Sphere where
+    arbitrary = do
+        sphereCenter <- arbitrary :: (Gen AnyVector3D)
+        sphereRadius <- choose (1.0, 10.0)
+        return $ Sphere (v3d sphereCenter) sphereRadius (DiffusiveMaterial (Color 1.0 1.0 1.0))

@@ -2,7 +2,7 @@ module Camera where
 
 import Data.Vec
 
-import Util
+import Math
 
 data Camera = Camera {
     position :: Vector3D,

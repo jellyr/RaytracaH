@@ -5,12 +5,12 @@ import Camera
 import Color
 import Light
 import Material
+import Math
 import Options
 import Primitive
 import Ray
 import Scene
 import Screen
-import Util
 
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
@@ -65,7 +65,7 @@ traceRayForReflectiveSurface options scene prevDepth ray hitPrimitive hitDistanc
         sumColors recursiveColor lightsColor
 
 rayHitPoint :: Ray -> Float -> Vector3D
-rayHitPoint (Ray rOrigin rDirectory) distance = rOrigin + multvs rDirectory distance
+rayHitPoint = pointOnRay
 
 sumLightsEffect :: RayTracerOptions -> Scene -> AnyPrimitive -> Vector3D -> Vector3D -> Color Float
 sumLightsEffect options scene hitPrimitive hitPoint rayDirection = 

@@ -3,8 +3,8 @@
 module Primitive where
 
 import Material
+import Math
 import Ray (Ray)
-import Util
 
 data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
 

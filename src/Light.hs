@@ -3,7 +3,7 @@ module Light where
 import Data.Vec
 
 import Color
-import Util
+import Math
 
 -- TODO: use light color in calculations
 data Light = Directional Vector3D Float (Color Float)

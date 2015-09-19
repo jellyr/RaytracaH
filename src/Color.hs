@@ -2,7 +2,7 @@ module Color where
 
 import Bitmap(Pixel(..))
 
-data Color a = Color a a a
+data Color a = Color a a a deriving (Show)
 
 instance Functor Color where
     fmap f (Color rr gg bb) = Color (f rr) (f gg) (f bb)

@@ -1,13 +1,13 @@
 import Test.QuickCheck
 import Test.Hspec
 
+import MathTest as MT
 import RayTest as RT
-import UtilTest as UT
-import SphereTest as ST
 
 main :: IO ()
 main = do
+    quickCheck MT.prop_deg2rad
+    quickCheck MT.prop_rad2deg
+    quickCheck MT.prop_mutlvs
     quickCheck RT.prop_allPrimaryRaysDirectionNormalized
-    quickCheck UT.prop_deg2rad
-    quickCheck UT.prop_rad2deg
-    quickCheck UT.prop_mutlvs
+

@@ -3,9 +3,9 @@ module Plane where
 import Data.Vec (dot)
 
 import Material
+import Math
 import Primitive
 import Ray
-import Util
 
 data Plane = Plane {
     point :: Vector3D,

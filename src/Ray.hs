@@ -1,11 +1,13 @@
 module Ray where
 
+import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
+
 import Data.Vec
 import qualified Data.Vector as V
 
 import Camera
+import Math
 import Screen
-import Util
 
 data Ray = Ray {
     origin :: Vector3D,
@@ -13,6 +15,10 @@ data Ray = Ray {
 } deriving (Show)
 
 type PixelsCoords = V.Vector (Int, Int)
+
+pointOnRay :: Ray -> Float -> Vector3D
+pointOnRay ray distance = 
+    origin ray + multvs (direction ray) distance
 
 generatePrimaryRays :: Screen -> Camera -> V.Vector Ray
 generatePrimaryRays screen camera = 
@@ -39,14 +45,23 @@ pixelsToCameraCoords screen fov =
         pixelToNdc = pixelToNdcCoords screen
 
 pixelToNdcCoords :: Screen -> Int -> Int-> Vector2D
-pixelToNdcCoords (Screen screenW screenH) x y = Vec2F ((fromIntegral x + 0.5)/fromIntegral screenW) ((fromIntegral y + 0.5)/fromIntegral screenH)
+pixelToNdcCoords (Screen screenW screenH) x y = 
+    Vec2F ((fromIntegral x + 0.5)/fromIntegral screenW) ((fromIntegral y + 0.5)/fromIntegral screenH)
 
 ndcToScreenCoords :: Screen  -> Vector2D -> Vector2D
-ndcToScreenCoords (Screen screenW screenH) (Vec2F x y) = Vec2F ((2*x - 1)*aspectRatio) (1 - 2*y)
+ndcToScreenCoords (Screen screenW screenH) (Vec2F x y) = 
+    Vec2F ((2*x - 1)*aspectRatio) (1 - 2*y)
     where
         aspectRatio = fromIntegral screenW / fromIntegral screenH
 
 screenCoordsToCameraCoords :: Float -> Vector2D -> Vector3D
-screenCoordsToCameraCoords fov (Vec2F x y) = Vec3F (x * fovTanValue) (y * fovTanValue) (-1.0)
+screenCoordsToCameraCoords fov (Vec2F x y) = 
+    Vec3F (x * fovTanValue) (y * fovTanValue) (-1.0)
     where
         fovTanValue = tan (deg2rad (fov / 2))
+
+instance Arbitrary Ray where
+    arbitrary = do
+        rOrigin <- arbitrary :: (Gen AnyVector3D)
+        rDirection <- arbitrary :: (Gen AnyVector3D)
+        return $ Ray (v3d rOrigin) (v3d rDirection)

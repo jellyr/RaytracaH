@@ -1,10 +1,10 @@
-module UtilTest where
+module MathTest where
 
 import Test.QuickCheck
 
 import Data.Vec
 
-import Util
+import Math
 
 prop_deg2rad :: Float -> Bool
 prop_deg2rad deg = deg2rad deg == deg * pi / 180.0
