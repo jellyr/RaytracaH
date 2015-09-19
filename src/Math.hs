@@ -16,10 +16,17 @@ rad2deg rad = 180.0 * rad / pi
 multvs :: Vector3D -> Float -> Vector3D
 multvs v scalar = v * Vec3F scalar scalar scalar
 
+comparisonEpsilon :: Fractional a => a
+comparisonEpsilon = 1e-5
+
+equalsWithEpsilon :: Float -> Float -> Bool
+equalsWithEpsilon a b = 
+    (abs (a - b)) < comparisonEpsilon
+
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
 
 instance Arbitrary AnyVector3D where
     arbitrary = 
         AnyVector3D <$> v
         where
-            v = Vec3F <$> choose (1.0, 10.0) <*> choose (1.0, 10.0) <*> choose (1.0, 10.0)
+            v = Vec3F <$> choose (1.0, 100.0) <*> choose (1.0, 100.0) <*> choose (1.0, 100.0)

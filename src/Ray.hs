@@ -18,7 +18,7 @@ type PixelsCoords = V.Vector (Int, Int)
 
 pointOnRay :: Ray -> Float -> Vector3D
 pointOnRay ray distance = 
-    origin ray + multvs (direction ray) distance
+    origin ray + multvs (normalize $ direction ray) distance
 
 generatePrimaryRays :: Screen -> Camera -> V.Vector Ray
 generatePrimaryRays screen camera = 
