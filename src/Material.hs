@@ -2,6 +2,7 @@ module Material where
 
 import Color
 
+-- TODO: make composable materials
 data Material = DiffusiveMaterial (Color Float) | DiffusiveAndSpecularMaterial (Color Float) Float | ReflectiveMaterial (Color Float) Float
 
 materialColor :: Material -> Color Float
