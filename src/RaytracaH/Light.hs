@@ -34,3 +34,11 @@ lightIntensity (Directional _ intensity _) = intensity
 
 lightColor :: Light -> Color Float
 lightColor (Directional _ _ color) = color
+
+data LightFactors = LightFactors {
+    diffuseFactor :: Float,
+    specularFactor :: Float
+}
+
+sumFactors :: LightFactors -> LightFactors -> LightFactors
+sumFactors (LightFactors d1 s1) (LightFactors d2 s2) = LightFactors (d1 + d2) (s1 + s2)

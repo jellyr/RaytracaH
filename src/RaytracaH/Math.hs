@@ -44,6 +44,12 @@ equalsWithEpsilon :: Float -> Float -> Bool
 equalsWithEpsilon a b = 
     (abs (a - b)) < comparisonEpsilon
 
+clampedToPositive :: Float -> Float
+clampedToPositive a = max 0.0 a
+
+limitedToOne :: Float -> Float
+limitedToOne a = min 1.0 a
+
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
 
 instance Arbitrary AnyVector3D where

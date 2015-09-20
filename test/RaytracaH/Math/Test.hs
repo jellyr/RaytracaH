@@ -35,3 +35,11 @@ prop_rad2deg rad =
 prop_mutlvs :: Float -> Float -> Float -> Float -> Bool
 prop_mutlvs x y z s = 
     multvs (Vec3F x y z) s == (Vec3F (x*s) (y*s) (z*s))
+
+prop_clampedToPositiveBiggerOrEqualZero :: Float -> Bool
+prop_clampedToPositiveBiggerOrEqualZero x = 
+    clampedToPositive x >= 0.0
+
+prop_limitedToOneAllLessThanOrEqualToOne :: Float -> Bool
+prop_limitedToOneAllLessThanOrEqualToOne x =
+    limitedToOne x <= 1.0
