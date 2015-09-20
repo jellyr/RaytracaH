@@ -2,8 +2,8 @@ name:                raytracaH
 version:             0.1.0.0
 synopsis:            Simple Ray Tracer
 description:         Please see README.md
-homepage:            http://github.com/githubuser/raytracaH#readme
-license:             BSD3
+homepage:            http://github.com/rafalnowak/raytracaH#readme
+license:             Apache
 license-file:        LICENSE
 author:              Rafał Nowak
 maintainer:          rafal.nowak1@gmail.com

@@ -1,3 +1,21 @@
+{-
+
+Copyright 2015 Rafał Nowak
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-}
+
 module RaytracaH.Math where
 
 import Test.QuickCheck (Arbitrary(..), choose)
@@ -15,6 +33,9 @@ rad2deg rad = 180.0 * rad / pi
 
 multvs :: Vector3D -> Float -> Vector3D
 multvs v scalar = v * Vec3F scalar scalar scalar
+
+reflect :: Vector3D -> Vector3D -> Vector3D
+reflect i n = i - (multvs n (2 * (dot i n)))
 
 comparisonEpsilon :: Fractional a => a
 comparisonEpsilon = 1e-5

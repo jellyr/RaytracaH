@@ -1,8 +1,8 @@
 # raytracaH
 
 raytracaH is ray tracer written in Haskell using functional approach.
-Current version is very early and more features are to come soon.
+Current version is in very early stage and more features are to come soon.
 
 # Licence
 
-TODO - choose MIT or Apache Licence
+The raytracaH is released under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
