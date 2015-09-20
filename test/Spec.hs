@@ -11,4 +11,5 @@ main = do
     quickCheck MT.prop_rad2deg
     quickCheck MT.prop_mutlvs
     quickCheck RT.prop_allPrimaryRaysDirectionNormalized
-    quickCheck ST.prop_hitPointInRadiusDistance
+    quickCheck ST.prop_hitPointAtRadiusDistance
+    quickCheck ST.prop_rayDirectedAtSphereIntersect
