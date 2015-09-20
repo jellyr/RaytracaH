@@ -62,4 +62,4 @@ test-suite raytracaH-test
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/raytracaH
+  location: https://github.com/rafalnowak/raytracaH
