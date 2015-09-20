@@ -1,13 +1,13 @@
-module Ray where
+module RaytracaH.Ray where
 
 import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
 
 import Data.Vec
 import qualified Data.Vector as V
 
-import Camera
-import Math
-import Screen
+import RaytracaH.Camera
+import RaytracaH.Math
+import RaytracaH.Screen
 
 data Ray = Ray {
     origin :: Vector3D,

@@ -1,6 +1,6 @@
-module Options where
+module RaytracaH.Options where
 
-import Color
+import RaytracaH.Color
 
 data RayTracerOptions = RayTracerOptions {
     imgWidth :: Int,

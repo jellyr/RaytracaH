@@ -1,9 +1,9 @@
-module Light where
+module RaytracaH.Light where
 
 import Data.Vec
 
-import Color
-import Math
+import RaytracaH.Color
+import RaytracaH.Math
 
 -- TODO: use light color in calculations
 data Light = Directional Vector3D Float (Color Float)

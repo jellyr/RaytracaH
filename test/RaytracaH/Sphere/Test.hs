@@ -1,15 +1,15 @@
-module SphereTest where
+module RaytracaH.Sphere.Test where
 
 import Test.QuickCheck
 
 import qualified Data.Vec as Vec
 
-import Color
-import Material 
-import Math
-import Primitive
-import Ray
-import Sphere
+import RaytracaH.Color
+import RaytracaH.Material 
+import RaytracaH.Math
+import RaytracaH.Primitive
+import RaytracaH.Ray
+import RaytracaH.Sphere
 
 raysOutsideSphere :: Sphere -> Gen Ray
 raysOutsideSphere sphere = do

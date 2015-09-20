@@ -1,14 +1,14 @@
-module Sphere where
+module RaytracaH.Sphere where
 
 import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
 
 import Data.Vec (dot, normalize)
 
-import Color
-import Material
-import Math
-import Primitive
-import Ray
+import RaytracaH.Color
+import RaytracaH.Material
+import RaytracaH.Math
+import RaytracaH.Primitive
+import RaytracaH.Ray
 
 data Sphere = Sphere {
     center :: Vector3D,

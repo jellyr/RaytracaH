@@ -1,13 +1,14 @@
-module RayTest where
+module RaytracaH.Ray.Test where
 
 import Test.QuickCheck
 
-import Camera
-import Math
-import Ray
-import Screen
 import Data.Vec as Vec
 import Data.Vector as V
+
+import RaytracaH.Camera
+import RaytracaH.Math
+import RaytracaH.Ray
+import RaytracaH.Screen
 
 prop_allPrimaryRaysDirectionNormalized :: Screen -> Float -> Bool
 prop_allPrimaryRaysDirectionNormalized screen fov =

@@ -1,10 +1,10 @@
-module MathTest where
+module RaytracaH.Math.Test where
 
 import Test.QuickCheck
 
 import Data.Vec
 
-import Math
+import RaytracaH.Math
 
 prop_deg2rad :: Float -> Bool
 prop_deg2rad deg = 

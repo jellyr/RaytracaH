@@ -1,4 +1,4 @@
-module Math where
+module RaytracaH.Math where
 
 import Test.QuickCheck (Arbitrary(..), choose)
 

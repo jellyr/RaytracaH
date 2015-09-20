@@ -1,9 +1,9 @@
 import Test.QuickCheck
 import Test.Hspec
 
-import qualified MathTest as MT
-import qualified RayTest as RT
-import qualified SphereTest as ST
+import qualified RaytracaH.Math.Test as MT
+import qualified RaytracaH.Ray.Test as RT
+import qualified RaytracaH.Sphere.Test as ST
 
 main :: IO ()
 main = do

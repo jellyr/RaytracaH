@@ -15,20 +15,20 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     RayTracer
-                     , Bitmap
-                     , Camera
-                     , Color
-                     , Light
-                     , Material
-                     , Math
-                     , Options
-                     , Plane
-                     , Primitive
-                     , Ray
-                     , Scene
-                     , Screen
-                     , Sphere
+  exposed-modules:     RaytracaH.RayTracer
+                     , RaytracaH.Bitmap
+                     , RaytracaH.Camera
+                     , RaytracaH.Color
+                     , RaytracaH.Light
+                     , RaytracaH.Material
+                     , RaytracaH.Math
+                     , RaytracaH.Options
+                     , RaytracaH.Plane
+                     , RaytracaH.Primitive
+                     , RaytracaH.Ray
+                     , RaytracaH.Scene
+                     , RaytracaH.Screen
+                     , RaytracaH.Sphere
   build-depends:       base >= 4.7 && < 5
                      , bytestring
                      , vector

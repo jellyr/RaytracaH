@@ -1,8 +1,8 @@
-module Camera where
+module RaytracaH.Camera where
 
 import Data.Vec
 
-import Math
+import RaytracaH.Math
 
 data Camera = Camera {
     position :: Vector3D,

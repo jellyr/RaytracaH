@@ -1,11 +1,11 @@
-module Plane where
+module RaytracaH.Plane where
 
 import Data.Vec (dot)
 
-import Material
-import Math
-import Primitive
-import Ray
+import RaytracaH.Material
+import RaytracaH.Math
+import RaytracaH.Primitive
+import RaytracaH.Ray
 
 data Plane = Plane {
     point :: Vector3D,

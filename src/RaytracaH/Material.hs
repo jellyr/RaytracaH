@@ -1,6 +1,6 @@
-module Material where
+module RaytracaH.Material where
 
-import Color
+import RaytracaH.Color
 
 -- TODO: make composable materials
 data Material = DiffusiveMaterial (Color Float) | 

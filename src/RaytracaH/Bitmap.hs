@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Bitmap(
+module RaytracaH.Bitmap(
         PPMFileHeader(..),
         Pixel(..),
         Pixels,

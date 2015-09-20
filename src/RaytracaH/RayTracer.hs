@@ -1,16 +1,16 @@
-module RayTracer where
+module RaytracaH.RayTracer where
 
-import Bitmap
-import Camera
-import Color
-import Light
-import Material
-import Math
-import Options
-import Primitive
-import Ray
-import Scene
-import Screen
+import RaytracaH.Bitmap
+import RaytracaH.Camera
+import RaytracaH.Color
+import RaytracaH.Light
+import RaytracaH.Material
+import RaytracaH.Math
+import RaytracaH.Options
+import RaytracaH.Primitive
+import RaytracaH.Ray
+import RaytracaH.Scene
+import RaytracaH.Screen
 
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V

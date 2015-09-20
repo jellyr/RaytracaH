@@ -1,6 +1,6 @@
-module Color where
+module RaytracaH.Color where
 
-import Bitmap(Pixel(..))
+import RaytracaH.Bitmap(Pixel(..))
 
 data Color a = Color a a a deriving (Show)
 

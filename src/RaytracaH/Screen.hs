@@ -1,4 +1,4 @@
-module Screen where
+module RaytracaH.Screen where
 
 import Test.QuickCheck (Arbitrary(..), choose)
 
@@ -9,6 +9,6 @@ data Screen = Screen {
 
 instance Arbitrary Screen where
     arbitrary = do
-        w <- choose (0, 100)
-        h <- choose (0, 100)
+        w <- choose (1, 100)
+        h <- choose (1, 100)
         return $ Screen w h

@@ -1,10 +1,10 @@
 {-# LANGUAGE ExistentialQuantification #-}
 
-module Primitive where
+module RaytracaH.Primitive where
 
-import Material
-import Math
-import Ray (Ray)
+import RaytracaH.Material
+import RaytracaH.Math
+import RaytracaH.Ray (Ray)
 
 data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
 
