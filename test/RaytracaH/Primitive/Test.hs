@@ -24,6 +24,9 @@ import RaytracaH.Ray
 rayHitPrimitive :: Primitive a => a -> Ray -> Bool
 rayHitPrimitive primitive ray =
     case intersection of Intersection _ -> True
-                         _ -> False
+                         NoIntersection -> False
     where
         intersection = intersect primitive ray
+
+rayMissPrimitive :: Primitive a => a -> Ray -> Bool
+rayMissPrimitive primitive ray = not $ rayHitPrimitive primitive ray

@@ -39,3 +39,8 @@ prop_raysDirectedAtPlaneAlwaysHit :: Plane -> Property
 prop_raysDirectedAtPlaneAlwaysHit plane =
     forAll (raysDirectedAtPlane plane) $ \ray ->
         rayHitPrimitive plane ray
+
+prop_raysNotDirectedAtPlaneAlwaysMiss :: Plane -> Property
+prop_raysNotDirectedAtPlaneAlwaysMiss plane =
+    forAll (raysDirectedAtPlane plane) $ \ray ->
+        rayMissPrimitive plane (Ray (origin ray) (- (direction ray)))
