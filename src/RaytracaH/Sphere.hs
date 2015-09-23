@@ -18,7 +18,7 @@ limitations under the License.
 
 module RaytracaH.Sphere where
 
-import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
+import Test.QuickCheck (Arbitrary(..), Gen(..), choose)
 
 import Data.Vec (dot, normalize)
 

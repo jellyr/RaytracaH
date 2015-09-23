@@ -20,7 +20,22 @@ module RaytracaH.Plane.Test where
 
 import Test.QuickCheck
 
-import Data.Vec
+import qualified Data.Vec as Vec
 
+import RaytracaH.Color
+import RaytracaH.Material 
 import RaytracaH.Math
 import RaytracaH.Plane
+import RaytracaH.Primitive.Test
+import RaytracaH.Primitive
+import RaytracaH.Ray
+
+raysDirectedAtPlane :: Plane -> Gen Ray
+raysDirectedAtPlane (Plane planePoint planeNormal _) = do
+    rayOrigin <- arbitrary :: (Gen AnyVector3D)
+    return $ Ray (v3d rayOrigin) (Vec.normalize $ planePoint - v3d rayOrigin)
+
+prop_raysDirectedAtPlaneAlwaysHit :: Plane -> Property
+prop_raysDirectedAtPlaneAlwaysHit plane =
+    forAll (raysDirectedAtPlane plane) $ \ray ->
+        rayHitPrimitive plane ray

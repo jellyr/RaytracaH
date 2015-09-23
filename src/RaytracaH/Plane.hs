@@ -18,8 +18,11 @@ limitations under the License.
 
 module RaytracaH.Plane where
 
-import Data.Vec (dot)
+import Test.QuickCheck (Arbitrary(..), Gen(..))
 
+import Data.Vec (dot, normalize)
+
+import RaytracaH.Color
 import RaytracaH.Material
 import RaytracaH.Math
 import RaytracaH.Primitive
@@ -29,7 +32,7 @@ data Plane = Plane {
     point :: Vector3D,
     normal :: Vector3D,
     material :: Material
-}
+} deriving (Show)
 
 instance Primitive Plane where
     intersect (Plane planePoint planeNormal _) (Ray rayOrigin rayDir) = 
@@ -45,3 +48,9 @@ instance Primitive Plane where
 
     material (Plane _ _ planeMaterial) = 
         planeMaterial
+
+instance Arbitrary Plane where
+    arbitrary = do
+        arbitraryPoint <- arbitrary :: (Gen AnyVector3D)
+        arbitraryNormal <- arbitrary :: (Gen AnyVector3D)
+        return $ Plane (v3d arbitraryPoint) (normalize $ v3d arbitraryNormal) (DiffusiveMaterial (Color 1.0 1.0 1.0))

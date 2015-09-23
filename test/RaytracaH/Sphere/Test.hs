@@ -26,6 +26,7 @@ import RaytracaH.Color
 import RaytracaH.Material 
 import RaytracaH.Math
 import RaytracaH.Primitive
+import RaytracaH.Primitive.Test
 import RaytracaH.Ray
 import RaytracaH.Sphere
 
@@ -67,11 +68,4 @@ raysDirectedAtSphere sphere = do
 prop_rayDirectedAtSphereIntersect :: Sphere -> Property
 prop_rayDirectedAtSphereIntersect sphere = 
     forAll (raysDirectedAtSphere sphere) $ \ray ->
-        rayHitSphere sphere ray
-
-rayHitSphere :: Sphere -> Ray -> Bool
-rayHitSphere sphere ray =
-    case intersection of Intersection _ -> True
-                         _ -> False
-    where
-        intersection = intersect sphere ray
+        rayHitPrimitive sphere ray
