@@ -18,7 +18,7 @@ limitations under the License.
 
 module RaytracaH.Math where
 
-import Test.QuickCheck (Arbitrary(..), choose)
+import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
 
 import Data.Vec
 
@@ -34,15 +34,15 @@ rad2deg rad = 180.0 * rad / pi
 multvs :: Vector3D -> Float -> Vector3D
 multvs v scalar = v * Vec3F scalar scalar scalar
 
-reflect :: Vector3D -> Vector3D -> Vector3D
-reflect i n = i - (multvs n (2 * (dot i n)))
-
 comparisonEpsilon :: Fractional a => a
 comparisonEpsilon = 1e-5
 
 equalsWithEpsilon :: Float -> Float -> Bool
-equalsWithEpsilon a b = 
-    (abs (a - b)) < comparisonEpsilon
+equalsWithEpsilon = equalsCustomEpsilon comparisonEpsilon
+
+equalsCustomEpsilon :: Float -> Float -> Float -> Bool
+equalsCustomEpsilon epsilon a b = 
+    (abs (a - b)) < epsilon
 
 clampedToPositive :: Float -> Float
 clampedToPositive a = max 0.0 a
@@ -50,10 +50,16 @@ clampedToPositive a = max 0.0 a
 limitedToOne :: Float -> Float
 limitedToOne a = min 1.0 a
 
+reflect :: Vector3D -> Vector3D -> Vector3D
+reflect i n = i - (multvs n (2 * (dot i n)))
+
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
 
 instance Arbitrary AnyVector3D where
-    arbitrary = 
-        AnyVector3D <$> v
-        where
-            v = Vec3F <$> choose (1.0, 100.0) <*> choose (1.0, 100.0) <*> choose (1.0, 100.0)
+    arbitrary = vectorWithFactorsInRange (-100.0) 100.0
+
+vectorWithFactorsInRange :: Float -> Float -> Gen AnyVector3D
+vectorWithFactorsInRange a b = 
+    AnyVector3D <$> v
+    where
+        v = Vec3F <$> choose (a, b) <*> choose (a, b) <*> choose (a, b)

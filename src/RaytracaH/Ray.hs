@@ -82,4 +82,4 @@ instance Arbitrary Ray where
     arbitrary = do
         rOrigin <- arbitrary :: (Gen AnyVector3D)
         rDirection <- arbitrary :: (Gen AnyVector3D)
-        return $ Ray (v3d rOrigin) (v3d rDirection)
+        return $ Ray (v3d rOrigin) (normalize $ v3d rDirection)

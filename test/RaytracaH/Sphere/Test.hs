@@ -35,7 +35,7 @@ raysOutsideSphere sphere = do
     yDistance <- choose (sphereRadius * 1.2, sphereRadius * 2.0)
     zDistance <- choose (sphereRadius * 1.2, sphereRadius * 2.0)
     rayDirection <- arbitrary :: (Gen AnyVector3D)
-    return $ Ray (sphereCenter + Vec.Vec3F xDistance yDistance zDistance) (v3d rayDirection)
+    return $ Ray (sphereCenter + Vec.Vec3F xDistance yDistance zDistance) (Vec.normalize $ v3d rayDirection)
     where
         sphereCenter = center sphere
         sphereRadius = radius sphere
@@ -53,7 +53,7 @@ rayHitPointAtRadius sphere ray =
                                 sphereCenter = center sphere
                                 sphereRadius = radius sphere
                              in
-                                equalsWithEpsilon (Vec.norm $ sphereCenter - hitPoint) sphereRadius
+                                equalsCustomEpsilon 1e-4 (Vec.norm $ sphereCenter - hitPoint) sphereRadius
                          _ ->
                              True
     where
