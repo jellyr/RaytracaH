@@ -43,3 +43,13 @@ prop_clampedToPositiveBiggerOrEqualZero x =
 prop_limitedToOneAllLessThanOrEqualToOne :: Float -> Bool
 prop_limitedToOneAllLessThanOrEqualToOne x =
     limitedToOne x <= 1.0
+
+prop_angleOfIncidenceEqualToAngleOfReflection :: AnyVector3D -> AnyVector3D -> Bool
+prop_angleOfIncidenceEqualToAngleOfReflection vec normal = 
+    equalsWithEpsilon angleOfIncidence angleOfReflection
+    where
+        vec' = v3d vec
+        normal' = normalize $ v3d normal
+        reflection = reflect vec' normal'
+        angleOfIncidence = acos $ vec' `dot` normal' / (norm vec' * norm normal')
+        angleOfReflection = acos $ (-reflection) `dot` normal' / (norm reflection * norm normal')

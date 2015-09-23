@@ -30,6 +30,7 @@ main = do
     quickCheck MT.prop_mutlvs
     quickCheck MT.prop_clampedToPositiveBiggerOrEqualZero
     quickCheck MT.prop_limitedToOneAllLessThanOrEqualToOne
+    quickCheck MT.prop_angleOfIncidenceEqualToAngleOfReflection
     quickCheck RT.prop_allPrimaryRaysDirectionNormalized
     quickCheck ST.prop_hitPointAtRadiusDistance
     quickCheck ST.prop_rayDirectedAtSphereIntersect
