@@ -31,9 +31,9 @@ toPixel (Color rr gg bb) = Pixel (componentToPixelRange rr) (componentToPixelRan
         componentToPixelRange c = ceiling $ c * 255.0
 
 -- TODO: replace 1.0 with some nice maximum value from color and make this function polymorphic
-sumColors :: Color Float -> Color Float -> Color Float
-sumColors (Color rA gA bA) (Color rB gB bB) = Color r g b
+sumColors :: (Num a, Ord a) => a -> Color a -> Color a -> Color a
+sumColors limit (Color rA gA bA) (Color rB gB bB) = Color r g b
     where
-        r = min 1.0 (rA + rB)
-        g = min 1.0 (gA + gB)
-        b = min 1.0 (bA + bB)
+        r = min limit (rA + rB)
+        g = min limit (gA + gB)
+        b = min limit (bA + bB)

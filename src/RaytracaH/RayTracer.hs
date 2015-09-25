@@ -83,7 +83,7 @@ traceRayForReflectiveSurface options scene prevDepth originalRay hitPrimitive hi
         lightsColor = 
             sumLightsEffect options scene hitPrimitive (rayHitPoint originalRay hitDistance) (direction originalRay)
     in
-        sumColors colorFromReflections lightsColor
+        sumColors 1.0 colorFromReflections lightsColor
 
 rayHitPoint :: Ray -> Float -> Vector3D
 rayHitPoint = pointOnRay
@@ -140,7 +140,7 @@ findNearestIntersectingPrimitiveIter primitives ray lastNearestDistance result
 
 phongFactorForLight :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Vector3D -> Vector3D -> LightFactors
 phongFactorForLight options sceneObjects light hitPrimitive hitPoint rayDirection =
-    if isHitPrimitiveInShadow options sceneObjects light hitPrimitive hitPoint == True then
+    if isHitPrimitiveInShadow options sceneObjects light hitPrimitive hitPoint then
         LightFactors 0.0 0.0
     else
         case material hitPrimitive of DiffusiveMaterial _ ->
