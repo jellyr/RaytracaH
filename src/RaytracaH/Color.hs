@@ -30,7 +30,6 @@ toPixel (Color rr gg bb) = Pixel (componentToPixelRange rr) (componentToPixelRan
     where
         componentToPixelRange c = ceiling $ c * 255.0
 
--- TODO: replace 1.0 with some nice maximum value from color and make this function polymorphic
 sumColors :: (Num a, Ord a) => a -> Color a -> Color a -> Color a
 sumColors limit (Color rA gA bA) (Color rB gB bB) = Color r g b
     where

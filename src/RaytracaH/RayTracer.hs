@@ -48,7 +48,7 @@ render :: Screen -> Camera -> RayTracerOptions -> Scene -> Pixels
 render screen camera options scene
     | V.null (sceneObjects scene) = V.map (const $ toPixel (backgroundColor options)) primaryRays
     | otherwise = 
-        V.map (\ray -> toPixel $ traceRay options scene 1 ray) primaryRays
+        V.map (toPixel . traceRay options scene 1) primaryRays
     where
         primaryRays = generatePrimaryRays screen camera
 
@@ -79,7 +79,7 @@ traceRayForReflectiveSurface options scene prevDepth originalRay hitPrimitive hi
         reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
         reflectRayDirection = reflect (direction originalRay) nHit
         colorFromReflections = 
-            fmap (\col -> kR * col) $ traceRay options scene (prevDepth + 1) (Ray reflectRayOrigin reflectRayDirection)
+            (\col -> kR * col) <$> traceRay options scene (prevDepth + 1) (Ray reflectRayOrigin reflectRayDirection)
         lightsColor = 
             sumLightsEffect options scene hitPrimitive (rayHitPoint originalRay hitDistance) (direction originalRay)
     in
@@ -124,7 +124,7 @@ findNearestIntersectingPrimitive primitives ray lastNearestDistance =
 findNearestIntersectingPrimitiveIter :: V.Vector AnyPrimitive -> Ray -> Float -> PrimitiveIntersection -> PrimitiveIntersection
 findNearestIntersectingPrimitiveIter primitives ray lastNearestDistance result
     | V.null primitives = result
-    | otherwise = 
+    | otherwise =
         case intersection of NoIntersection -> 
                                  proceedWithNoIntersection
                              Intersection distance -> 
@@ -139,8 +139,8 @@ findNearestIntersectingPrimitiveIter primitives ray lastNearestDistance result
             proceedWithNoIntersection = findInTail lastNearestDistance result
 
 phongFactorForLight :: RayTracerOptions -> V.Vector AnyPrimitive -> Light -> AnyPrimitive -> Vector3D -> Vector3D -> LightFactors
-phongFactorForLight options sceneObjects light hitPrimitive hitPoint rayDirection =
-    if isHitPrimitiveInShadow options sceneObjects light hitPrimitive hitPoint then
+phongFactorForLight options objectsInScene light hitPrimitive hitPoint rayDirection =
+    if isHitPrimitiveInShadow options objectsInScene light hitPrimitive hitPoint then
         LightFactors 0.0 0.0
     else
         case material hitPrimitive of DiffusiveMaterial _ ->
@@ -166,8 +166,8 @@ calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection =
     where
         nHit = normalAtHitPoint hitPrimitive hitPoint
         reflectedVec = reflect (lightDir light) nHit
-        n = case material hitPrimitive of DiffusiveAndSpecularMaterial _ n -> 
-                                              (clampedToPositive (Vec.dot reflectedVec (-1.0 * rayDirection))) ** n
+        n = case material hitPrimitive of DiffusiveAndSpecularMaterial _ specularExponent -> 
+                                              clampedToPositive (Vec.dot reflectedVec (-1.0 * rayDirection)) ** specularExponent
                                           _ -> 
                                               0.0
         specular = lightIntensity light * n
