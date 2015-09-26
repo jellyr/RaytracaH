@@ -18,8 +18,6 @@ limitations under the License.
 
 module RaytracaH.Light where
 
-import Data.Vec
-
 import RaytracaH.Color
 import RaytracaH.Math
 

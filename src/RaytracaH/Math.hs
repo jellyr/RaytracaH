@@ -18,7 +18,7 @@ limitations under the License.
 
 module RaytracaH.Math where
 
-import Test.QuickCheck (Gen(..), Arbitrary(..), choose)
+import Test.QuickCheck (Gen, Arbitrary(..), choose)
 
 import Data.Vec
 
@@ -41,17 +41,17 @@ equalsWithEpsilon :: Float -> Float -> Bool
 equalsWithEpsilon = equalsCustomEpsilon comparisonEpsilon
 
 equalsCustomEpsilon :: Float -> Float -> Float -> Bool
-equalsCustomEpsilon epsilon a b = 
-    (abs (a - b)) < epsilon
+equalsCustomEpsilon epsilon a b =
+    abs (a - b) < epsilon
 
 clampedToPositive :: Float -> Float
-clampedToPositive a = max 0.0 a
+clampedToPositive = max 0.0
 
 limitedToOne :: Float -> Float
-limitedToOne a = min 1.0 a
+limitedToOne = min 1.0
 
 reflect :: Vector3D -> Vector3D -> Vector3D
-reflect i n = i - (multvs n (2 * (dot i n)))
+reflect i n = i - multvs n (2 * dot i n)
 
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
 

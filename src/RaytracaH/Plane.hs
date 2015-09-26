@@ -18,7 +18,7 @@ limitations under the License.
 
 module RaytracaH.Plane where
 
-import Test.QuickCheck (Arbitrary(..), Gen(..))
+import Test.QuickCheck (Arbitrary(..), Gen)
 
 import Data.Vec (dot, normalize)
 

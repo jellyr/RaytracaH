@@ -18,7 +18,7 @@ limitations under the License.
 
 module RaytracaH.Sphere where
 
-import Test.QuickCheck (Arbitrary(..), Gen(..), choose)
+import Test.QuickCheck (Arbitrary(..), Gen, choose)
 
 import Data.Vec (dot, normalize)
 
@@ -36,7 +36,7 @@ data Sphere = Sphere {
 
 instance Primitive Sphere where
     intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) = 
-        if tca < 0 || dSquared > rSquared || all (< 0.0) distanceParams || any (isNaN) distanceParams then
+        if tca < 0 || dSquared > rSquared || all (< 0.0) distanceParams || any isNaN distanceParams then
             NoIntersection
         else
             Intersection (minimum (filter (>= 0.0) distanceParams))

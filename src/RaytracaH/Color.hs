@@ -31,8 +31,8 @@ toPixel (Color rr gg bb) = Pixel (componentToPixelRange rr) (componentToPixelRan
         componentToPixelRange c = ceiling $ c * 255.0
 
 sumColors :: (Num a, Ord a) => a -> Color a -> Color a -> Color a
-sumColors limit (Color rA gA bA) (Color rB gB bB) = Color r g b
+sumColors limit (Color rA gA bA) (Color rB gB bB) = Color sumR sumG sumB
     where
-        r = min limit (rA + rB)
-        g = min limit (gA + gB)
-        b = min limit (bA + bB)
+        sumR = min limit (rA + rB)
+        sumG = min limit (gA + gB)
+        sumB = min limit (bA + bB)
