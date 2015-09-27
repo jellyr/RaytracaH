@@ -18,17 +18,10 @@ limitations under the License.
 
 module RaytracaH.Color where
 
-import RaytracaH.Bitmap(Pixel(..))
-
 data Color a = Color a a a deriving (Show)
 
 instance Functor Color where
     fmap f (Color rr gg bb) = Color (f rr) (f gg) (f bb)
-
-toPixel :: Color Float -> Pixel
-toPixel (Color rr gg bb) = Pixel (componentToPixelRange rr) (componentToPixelRange gg) (componentToPixelRange bb)
-    where
-        componentToPixelRange c = ceiling $ c * 255.0
 
 sumColors :: (Num a, Ord a) => a -> Color a -> Color a -> Color a
 sumColors limit (Color rA gA bA) (Color rB gB bB) = Color sumR sumG sumB

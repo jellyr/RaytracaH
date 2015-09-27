@@ -21,11 +21,15 @@ module RaytracaH.Material where
 import RaytracaH.Color
 
 -- TODO: make composable materials
-data Material = DiffusiveMaterial (Color Float) | 
-    DiffusiveAndSpecularMaterial (Color Float) Float | 
-    ReflectiveMaterial (Color Float) Float deriving (Show)
+data Material = DiffusiveMaterial {
+        color :: Color Float
+    } |
+    DiffusiveAndSpecularMaterial {
+        color :: Color Float,
+        kS :: Float
+    } |
+    ReflectiveMaterial {
+        color :: Color Float,
+        kR :: Float
+    } deriving (Show)
 
-materialColor :: Material -> Color Float
-materialColor (DiffusiveMaterial c) = c
-materialColor (DiffusiveAndSpecularMaterial c _) = c
-materialColor (ReflectiveMaterial c _) = c

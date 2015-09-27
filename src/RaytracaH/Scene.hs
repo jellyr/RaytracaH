@@ -24,6 +24,6 @@ import RaytracaH.Light
 import RaytracaH.Primitive
 
 data Scene = Scene {
-    sceneLights :: V.Vector Light,
-    sceneObjects :: V.Vector AnyPrimitive
+    lights :: V.Vector Light,
+    objects :: V.Vector AnyPrimitive
 }

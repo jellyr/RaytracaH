@@ -23,6 +23,7 @@ module RaytracaH.Bitmap(
         Pixel(..),
         Pixels,
         PPMFile(..),
+        fromColor,
         writeAsciiPPMFile
     ) where
 
@@ -30,6 +31,8 @@ import Data.ByteString.Lazy (ByteString)
 import System.IO
 import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.Vector as V
+
+import RaytracaH.Color (Color(..))
 
 data PPMFileHeader = PPMFileHeader {
     imageWidth :: Int,
@@ -42,6 +45,11 @@ data Pixel = Pixel {
     g :: Int,
     b :: Int
 }
+
+fromColor :: Color Float -> Pixel
+fromColor (Color rr gg bb) = Pixel (componentToPixelRange rr) (componentToPixelRange gg) (componentToPixelRange bb)
+    where
+        componentToPixelRange c = ceiling $ c * 255.0
 
 type Pixels = V.Vector Pixel
 
