@@ -16,7 +16,12 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE DeriveGeneric #-}
+
 module RaytracaH.Material where
+
+import Data.Aeson
+import GHC.Generics
 
 import RaytracaH.Color
 
@@ -31,5 +36,8 @@ data Material = DiffusiveMaterial {
     ReflectiveMaterial {
         color :: Color Float,
         kR :: Float
-    } deriving (Show)
+    } deriving (Show, Generic)
+
+instance ToJSON Material
+instance FromJSON Material
 

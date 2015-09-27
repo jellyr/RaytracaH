@@ -16,10 +16,14 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
+
 module RaytracaH.Sphere where
 
 import Test.QuickCheck (Arbitrary(..), Gen, choose)
 
+import Data.Aeson
+import Data.Text hiding (all, any, minimum, filter)
 import Data.Vec (dot, normalize)
 
 import RaytracaH.Color
@@ -53,6 +57,15 @@ instance Primitive Sphere where
 
     material (Sphere _ _ sphereMaterial) =
         sphereMaterial
+
+instance ToJSON Sphere where
+    toJSON (Sphere sphereCenter sphereRadius sphereMaterial) =
+        object [ "type" .= String "sphere"
+               , "data" .= object [ "center" .= sphereCenter
+                                  , "radius" .= sphereRadius
+                                  , "material" .= sphereMaterial
+                                  ]
+               ]
 
 instance Arbitrary Sphere where
     arbitrary = do

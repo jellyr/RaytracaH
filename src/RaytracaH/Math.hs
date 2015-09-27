@@ -16,11 +16,17 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE OverloadedStrings#-}
+
 module RaytracaH.Math where
 
 import Test.QuickCheck (Gen, Arbitrary(..), choose)
 
+import Data.Aeson
 import Data.Vec
+import Data.Text
 
 type Vector2D = Packed (Vec2 Float)
 type Vector3D = Packed (Vec3 Float)
@@ -53,6 +59,17 @@ limitedToOne = min 1.0
 reflect :: Vector3D -> Vector3D -> Vector3D
 reflect i n = i - multvs n (2 * dot i n)
 
+instance ToJSON Vector3D where
+    toJSON (Vec3F x y z) =
+        object [ "x" .= x
+               , "y" .= y
+               , "z" .= z]
+
+instance FromJSON Vector3D where
+    parseJSON (Object o) =
+        Vec3F <$> o .: "x" <*> o .: "y" <*> o .: "z"
+
+-- TODO: remove this new type and use type synonim instances and flexible instances as in Aeson typeclasses
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
 
 instance Arbitrary AnyVector3D where

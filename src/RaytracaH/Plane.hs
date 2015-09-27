@@ -16,10 +16,14 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
+
 module RaytracaH.Plane where
 
 import Test.QuickCheck (Arbitrary(..), Gen)
 
+import Data.Aeson
+import Data.Text
 import Data.Vec (dot, normalize)
 
 import RaytracaH.Color
@@ -48,6 +52,15 @@ instance Primitive Plane where
 
     material (Plane _ _ planeMaterial) = 
         planeMaterial
+
+instance ToJSON Plane where
+    toJSON (Plane planePoint planeNormal planeMaterial) =
+        object [ "type" .= String "plane"
+               , "data" .= object [ "point" .= planePoint
+                                  , "normal" .= planeNormal
+                                  , "material" .= planeMaterial
+                                  ]
+               ]
 
 instance Arbitrary Plane where
     arbitrary = do

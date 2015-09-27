@@ -16,9 +16,13 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE DeriveGeneric #-}
+
 module RaytracaH.Scene where
 
+import Data.Aeson
 import qualified Data.Vector as V
+import GHC.Generics
 
 import RaytracaH.Light
 import RaytracaH.Primitive
@@ -26,4 +30,7 @@ import RaytracaH.Primitive
 data Scene = Scene {
     lights :: V.Vector Light,
     objects :: V.Vector AnyPrimitive
-}
+} deriving (Generic)
+
+instance ToJSON Scene
+

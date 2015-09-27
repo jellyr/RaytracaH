@@ -20,6 +20,8 @@ limitations under the License.
 
 module RaytracaH.Primitive where
 
+import Data.Aeson
+
 import RaytracaH.Material
 import RaytracaH.Math
 import RaytracaH.Ray (Ray)
@@ -32,9 +34,13 @@ class Primitive a where
     material :: a -> Material
 
 -- TODO: eliminate existential type
-data AnyPrimitive = forall p . Primitive p => AnyPrimitive p
+data AnyPrimitive = forall p . (Primitive p, ToJSON p) => AnyPrimitive p
 
 instance Primitive AnyPrimitive where 
     intersect (AnyPrimitive p) = intersect p
     normalAtHitPoint (AnyPrimitive p) = normalAtHitPoint p
     material (AnyPrimitive p) = material p
+
+instance ToJSON AnyPrimitive where
+    toJSON (AnyPrimitive p) = toJSON p
+

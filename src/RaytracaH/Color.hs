@@ -16,7 +16,12 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
+
 module RaytracaH.Color where
+
+import Data.Aeson
+import Data.Text
 
 data Color a = Color a a a deriving (Show)
 
@@ -29,3 +34,13 @@ sumColors limit (Color rA gA bA) (Color rB gB bB) = Color sumR sumG sumB
         sumR = min limit (rA + rB)
         sumG = min limit (gA + gB)
         sumB = min limit (bA + bB)
+
+instance ToJSON a => ToJSON (Color a) where
+    toJSON (Color r g b) =
+        object [ "r" .= r
+               , "g" .= g
+               , "b" .= b]
+
+instance FromJSON a => FromJSON (Color a) where
+    parseJSON (Object o) =
+        Color <$> o .: "r" <*> o .: "g" <*> o .: "b"

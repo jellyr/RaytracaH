@@ -16,7 +16,12 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE DeriveGeneric #-}
+
 module RaytracaH.Light where
+
+import Data.Aeson
+import GHC.Generics
 
 import RaytracaH.Color
 import RaytracaH.Math
@@ -26,7 +31,10 @@ data Light = Directional {
     direction :: Vector3D,
     intensity :: Float,
     color :: Color Float
-}
+} deriving (Show, Generic)
+
+instance ToJSON Light
+instance FromJSON Light
 
 data LightFactors = LightFactors {
     diffuse :: Float,
