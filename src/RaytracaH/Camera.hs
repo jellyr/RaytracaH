@@ -30,7 +30,7 @@ data Camera = Camera {
 }
 
 pointToCameraSpace :: Camera -> Vector3D -> Vector3D
-pointToCameraSpace camera v = 
+pointToCameraSpace camera v =
     Vec3F (x/w) (y/w) (z/w)
     where
         view = rotationLookAt (unpack $ up camera) (unpack $ position camera) (unpack $ target camera)

@@ -18,9 +18,13 @@ limitations under the License.
 
 module Main where
 
+import qualified Data.Aeson as JSON
+import Data.ByteString.Lazy (ByteString)
+import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
 import Data.Time
+import System.IO
 
 import RaytracaH.Bitmap
 import RaytracaH.Camera
@@ -34,17 +38,7 @@ import RaytracaH.Options
 import RaytracaH.Plane
 import RaytracaH.RayTracer
 
--- TODO: temporary stuff, only for result testing purpose
--- in future all config and input will be loaded from file
-outputFileName :: String
-outputFileName = "test.ppm"
-
-outputImgWidth :: Int
-outputImgWidth = 640
-
-outputImgHeight :: Int
-outputImgHeight = 480
-
+-- TODO: input scene loaded from file
 sampleLights :: V.Vector Light
 sampleLights = V.fromList [Directional (Vec.normalize $ Vec.Vec3F 0.0 0.0 0.0 - Vec.Vec3F 0.0 1.0 1.0) 0.8 (Color 1 1 1),
                            Directional (Vec.normalize $ Vec.Vec3F 0.0 0.0 0.0 - Vec.Vec3F (-1.0) 1.0 1.0) 0.3 (Color 1 1 1),
@@ -66,15 +60,24 @@ sampleScene = Scene sampleLights sampleSpheres
 sampleCamera :: Camera
 sampleCamera = Camera (Vec.Vec3F 0.0 5.0 35.0) (Vec.Vec3F 0 0 0) (Vec.Vec3F 0 1 0) 30.0
 
-options :: RayTracerOptions
-options = RayTracerOptions outputImgWidth outputImgHeight (Color (194.0/255.0) (204/255.0) 1.0) 10000.0 0.0001
+loadOptions :: String -> IO (Either String RayTracerOptions)
+loadOptions fileName =
+    do
+        file <- openFile fileName ReadMode
+        contents <- BS.hGetContents file
+        return (JSON.eitherDecode contents :: Either String RayTracerOptions)
 
 main :: IO ()
 main = do
     putStrLn "raytracaH\n"
     startTime <- getCurrentTime
-    writeAsciiPPMFile outputFileName (fileWithRenderedImage sampleCamera options sampleScene)
+    optionsDecoded <- loadOptions "config.json"
+    case optionsDecoded of
+        Left err ->
+            putStrLn err
+        Right options ->
+            writeAsciiPPMFile (outputFileName options) (fileWithRenderedImage sampleCamera options sampleScene)
     endTime <- getCurrentTime
-    putStr ("Work finished, results saved to " ++ outputFileName ++ ", total time: ")
+    putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
     print $ diffUTCTime endTime startTime
     return ()

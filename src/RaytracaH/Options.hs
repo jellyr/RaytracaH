@@ -16,14 +16,23 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE DeriveGeneric #-}
+
 module RaytracaH.Options where
+
+import Data.Aeson
+import GHC.Generics
 
 import RaytracaH.Color
 
 data RayTracerOptions = RayTracerOptions {
     imgWidth :: Int,
     imgHeight :: Int,
+    outputFileName :: String,
     backgroundColor :: Color Float,
     infinityDistance :: Float,
     shadowBias :: Float
-}
+} deriving (Show, Generic)
+
+instance ToJSON RayTracerOptions
+instance FromJSON RayTracerOptions

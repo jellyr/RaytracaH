@@ -23,7 +23,6 @@ module RaytracaH.Sphere where
 import Test.QuickCheck (Arbitrary(..), Gen, choose)
 
 import Data.Aeson
-import Data.Text hiding (all, any, minimum, filter)
 import Data.Vec (dot, normalize)
 
 import RaytracaH.Color
