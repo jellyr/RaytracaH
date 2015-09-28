@@ -26,7 +26,7 @@ rayHitPrimitive primitive ray =
     case intersection of Intersection _ -> True
                          NoIntersection -> False
     where
-        intersection = intersect primitive ray
+        intersection = primitive `intersect` ray
 
 rayMissPrimitive :: Primitive a => a -> Ray -> Bool
 rayMissPrimitive primitive ray = not $ rayHitPrimitive primitive ray

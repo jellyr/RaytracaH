@@ -62,7 +62,7 @@ traceRay options scene depth ray
                   where
                       primitiveWithIntersection = findNearestIntersectingPrimitive (Scene.objects scene) ray (infinityDistance options)
 
-traceRayBasedOnMaterial :: RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> AnyPrimitive -> Float -> Color Float
+traceRayBasedOnMaterial :: Primitive p => RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> p -> Float -> Color Float
 traceRayBasedOnMaterial options scene prevDepth ray hitPrimitive hitDistance =
     case 
         material hitPrimitive 
@@ -71,7 +71,7 @@ traceRayBasedOnMaterial options scene prevDepth ray hitPrimitive hitDistance =
        _ ->
            sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (Ray.direction ray)
 
-traceRayForReflectiveSurface :: RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> AnyPrimitive -> Float -> Float -> Color Float
+traceRayForReflectiveSurface :: Primitive p => RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> p -> Float -> Float -> Color Float
 traceRayForReflectiveSurface options scene prevDepth originalRay hitPrimitive hitDistance kR =
     let
         hitPoint = rayHitPoint originalRay hitDistance
@@ -88,13 +88,13 @@ traceRayForReflectiveSurface options scene prevDepth originalRay hitPrimitive hi
 rayHitPoint :: Ray.Ray -> Float -> Vector3D
 rayHitPoint = Ray.pointOnRay
 
-sumLightsEffect :: RayTracerOptions -> Scene.Scene -> AnyPrimitive -> Vector3D -> Vector3D -> Color Float
+sumLightsEffect :: Primitive p => RayTracerOptions -> Scene.Scene -> p -> Vector3D -> Vector3D -> Color Float
 sumLightsEffect options scene hitPrimitive hitPoint rayDirection = 
     (\c -> limitedToOne (diffuse * c + specular)) <$> Material.color (material hitPrimitive)
     where
         Light.LightFactors diffuse specular = phongFactors options scene hitPrimitive hitPoint rayDirection
 
-phongFactors :: RayTracerOptions -> Scene.Scene -> AnyPrimitive -> Vector3D -> Vector3D -> Light.LightFactors
+phongFactors :: Primitive p => RayTracerOptions -> Scene.Scene -> p -> Vector3D -> Vector3D -> Light.LightFactors
 phongFactors options scene hitPrimitive hitPoint rayDirection = 
     V.foldl' (\previousLightFactors light ->
         let
@@ -103,7 +103,7 @@ phongFactors options scene hitPrimitive hitPoint rayDirection =
             Light.sumFactors lightFactors previousLightFactors
     ) (Light.LightFactors 0.0 0.0) (Scene.lights scene)
 
-isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector AnyPrimitive -> Light.Light -> AnyPrimitive -> Vector3D -> Bool
+isHitPrimitiveInShadow :: Primitive p => RayTracerOptions -> V.Vector AnyPrimitive -> Light.Light -> p -> Vector3D -> Bool
 isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint = 
     case intersectionWithShadowRay of IntersectionWithPrimitive _ _ -> True
                                       _ -> False
@@ -111,7 +111,7 @@ isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint =
         shadowRay = createShadowRay options light hitPrimitive hitPoint
         intersectionWithShadowRay = findNearestIntersectingPrimitive primitives shadowRay (infinityDistance options)
 
-createShadowRay :: RayTracerOptions -> Light.Light -> AnyPrimitive -> Vector3D -> Ray.Ray
+createShadowRay :: Primitive p => RayTracerOptions -> Light.Light -> p -> Vector3D -> Ray.Ray
 createShadowRay options light hitPrimitive hitPoint = 
     Ray.Ray (hitPoint + multvs (normalAtHitPoint hitPrimitive hitPoint) (shadowBias options)) (-vecL)
     where
@@ -138,7 +138,7 @@ findNearestIntersectingPrimitiveIter primitives ray lastNearestDistance result
             findInTail = findNearestIntersectingPrimitiveIter (V.tail primitives) ray
             proceedWithNoIntersection = findInTail lastNearestDistance result
 
-phongFactorForLight :: RayTracerOptions -> V.Vector AnyPrimitive -> Light.Light -> AnyPrimitive -> Vector3D -> Vector3D -> Light.LightFactors
+phongFactorForLight :: Primitive p => RayTracerOptions -> V.Vector AnyPrimitive -> Light.Light -> p -> Vector3D -> Vector3D -> Light.LightFactors
 phongFactorForLight options objectsInScene light hitPrimitive hitPoint rayDirection =
     if isHitPrimitiveInShadow options objectsInScene light hitPrimitive hitPoint then
         Light.LightFactors 0.0 0.0
@@ -153,14 +153,14 @@ phongFactorForLight options objectsInScene light hitPrimitive hitPoint rayDirect
         diffuse = calculateDiffuseForHitPrimitive light hitPrimitive hitPoint
         specular = calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection
 
-calculateDiffuseForHitPrimitive :: Light.Light -> AnyPrimitive -> Vector3D -> Float
+calculateDiffuseForHitPrimitive :: Primitive p => Light.Light -> p -> Vector3D -> Float
 calculateDiffuseForHitPrimitive light hitPrimitive hitPoint =
     diffuse
     where
         nHit = normalAtHitPoint hitPrimitive hitPoint
         diffuse = Light.intensity light * clampedToPositive (Vec.dot nHit (-1.0 * Light.direction light))
 
-calculateSpecularForHitPrimitive :: Light.Light -> AnyPrimitive -> Vector3D -> Vector3D -> Float
+calculateSpecularForHitPrimitive :: Primitive p => Light.Light -> p -> Vector3D -> Vector3D -> Float
 calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection =
     specular
     where

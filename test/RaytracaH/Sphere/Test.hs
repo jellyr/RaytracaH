@@ -22,8 +22,6 @@ import Test.QuickCheck
 
 import qualified Data.Vec as Vec
 
-import RaytracaH.Color
-import RaytracaH.Material 
 import RaytracaH.Math
 import RaytracaH.Primitive
 import RaytracaH.Primitive.Test
@@ -45,7 +43,7 @@ prop_hitPointAtRadiusDistance :: Sphere -> Property
 prop_hitPointAtRadiusDistance sphere = 
     forAll (raysOutsideSphere sphere) $ \ray ->
         rayHitPointAtRadius sphere ray
-        
+
 rayHitPointAtRadius :: Sphere -> Ray -> Bool
 rayHitPointAtRadius sphere ray = 
     case intersection of Intersection distance ->
@@ -58,7 +56,7 @@ rayHitPointAtRadius sphere ray =
                          _ ->
                              True
     where
-        intersection = intersect sphere ray
+        intersection = sphere `intersect` ray
 
 raysDirectedAtSphere :: Sphere -> Gen Ray
 raysDirectedAtSphere sphere = do

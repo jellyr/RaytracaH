@@ -22,16 +22,13 @@ import Test.QuickCheck
 
 import qualified Data.Vec as Vec
 
-import RaytracaH.Color
-import RaytracaH.Material 
 import RaytracaH.Math
 import RaytracaH.Plane
 import RaytracaH.Primitive.Test
-import RaytracaH.Primitive
 import RaytracaH.Ray
 
 raysDirectedAtPlane :: Plane -> Gen Ray
-raysDirectedAtPlane (Plane planePoint planeNormal _) = do
+raysDirectedAtPlane (Plane planePoint _ _) = do
     rayOrigin <- arbitrary :: (Gen AnyVector3D)
     return $ Ray (v3d rayOrigin) (Vec.normalize $ planePoint - v3d rayOrigin)
 

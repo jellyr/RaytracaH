@@ -18,8 +18,6 @@ limitations under the License.
 
 module RaytracaH.Math.Test where
 
-import Test.QuickCheck
-
 import Data.Vec
 
 import RaytracaH.Math
@@ -34,7 +32,7 @@ prop_rad2deg rad =
 
 prop_mutlvs :: Float -> Float -> Float -> Float -> Bool
 prop_mutlvs x y z s = 
-    multvs (Vec3F x y z) s == (Vec3F (x*s) (y*s) (z*s))
+    multvs (Vec3F x y z) s == Vec3F (x*s) (y*s) (z*s)
 
 prop_clampedToPositiveBiggerOrEqualZero :: Float -> Bool
 prop_clampedToPositiveBiggerOrEqualZero x = 
@@ -45,10 +43,10 @@ prop_limitedToOneAllLessThanOrEqualToOne x =
     limitedToOne x <= 1.0
 
 prop_angleOfIncidenceEqualToAngleOfReflection :: AnyVector3D -> AnyVector3D -> Bool
-prop_angleOfIncidenceEqualToAngleOfReflection vec normal = 
+prop_angleOfIncidenceEqualToAngleOfReflection vector normal = 
     equalsWithEpsilon angleOfIncidence angleOfReflection
     where
-        vec' = v3d vec
+        vec' = v3d vector
         normal' = normalize $ v3d normal
         reflection = reflect vec' normal'
         angleOfIncidence = acos $ vec' `dot` normal' / (norm vec' * norm normal')
