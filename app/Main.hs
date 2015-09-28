@@ -19,7 +19,6 @@ limitations under the License.
 module Main where
 
 import qualified Data.Aeson as JSON
-import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
@@ -75,7 +74,8 @@ main = do
     case optionsDecoded of
         Left err ->
             putStrLn err
-        Right options ->
+        Right options -> do
+            putStrLn "Loaded options from config.json"
             writeAsciiPPMFile (outputFileName options) (fileWithRenderedImage sampleCamera options sampleScene)
     endTime <- getCurrentTime
     putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
