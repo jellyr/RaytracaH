@@ -26,7 +26,6 @@ import Test.QuickCheck (Gen, Arbitrary(..), choose)
 
 import Data.Aeson
 import Data.Vec
-import Data.Text
 
 type Vector2D = Packed (Vec2 Float)
 type Vector3D = Packed (Vec3 Float)
@@ -68,6 +67,8 @@ instance ToJSON Vector3D where
 instance FromJSON Vector3D where
     parseJSON (Object o) =
         Vec3F <$> o .: "x" <*> o .: "y" <*> o .: "z"
+    parseJSON _ =
+        fail "Could not parse Vector 3D"
 
 -- TODO: remove this new type and use type synonim instances and flexible instances as in Aeson typeclasses
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
