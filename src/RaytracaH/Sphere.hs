@@ -70,4 +70,4 @@ instance Arbitrary Sphere where
     arbitrary = do
         sphereCenter <- arbitrary :: (Gen AnyVector3D)
         sphereRadius <- choose (1.0, 100.0)
-        return $ Sphere (v3d sphereCenter) sphereRadius (DiffusiveMaterial (Color 1.0 1.0 1.0))
+        return $ Sphere (v3d sphereCenter) sphereRadius (Material (Color 1.0 1.0 1.0) Nothing Nothing)

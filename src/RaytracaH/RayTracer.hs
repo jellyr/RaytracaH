@@ -66,7 +66,7 @@ traceRayBasedOnMaterial :: Primitive p => RayTracerOptions -> Scene.Scene -> Int
 traceRayBasedOnMaterial options scene prevDepth ray hitPrimitive hitDistance =
     case 
         material hitPrimitive 
-    of Material.ReflectiveMaterial _ kR ->
+    of Material.Material _ _ (Just kR) ->
            traceRayForReflectiveSurface options scene prevDepth ray hitPrimitive hitDistance kR
        _ ->
            sumLightsEffect options scene hitPrimitive (rayHitPoint ray hitDistance) (Ray.direction ray)
@@ -143,12 +143,10 @@ phongFactorForLight options objectsInScene light hitPrimitive hitPoint rayDirect
     if isHitPrimitiveInShadow options objectsInScene light hitPrimitive hitPoint then
         Light.LightFactors 0.0 0.0
     else
-        case material hitPrimitive of Material.DiffusiveMaterial _ ->
+        case material hitPrimitive of Material.Material _ Nothing _ ->
                                           Light.LightFactors (limitedToOne diffuse) 0.0
-                                      Material.DiffusiveAndSpecularMaterial _ _ ->
+                                      Material.Material _ (Just _) _ ->
                                           Light.LightFactors (limitedToOne diffuse) (limitedToOne specular)
-                                      Material.ReflectiveMaterial _ _ ->
-                                          Light.LightFactors (limitedToOne diffuse) 0.0
     where
         diffuse = calculateDiffuseForHitPrimitive light hitPrimitive hitPoint
         specular = calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection
@@ -166,8 +164,10 @@ calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection =
     where
         nHit = normalAtHitPoint hitPrimitive hitPoint
         reflectedVec = reflect (Light.direction light) nHit
-        n = case material hitPrimitive of Material.DiffusiveAndSpecularMaterial _ specularExponent -> 
-                                              clampedToPositive (Vec.dot reflectedVec (-1.0 * rayDirection)) ** specularExponent
-                                          _ -> 
-                                              0.0
-        specular = Light.intensity light * n
+        specular =
+            case
+                material hitPrimitive
+            of Material.Material _ (Just kS) _ ->
+                   Light.intensity light * (clampedToPositive (Vec.dot reflectedVec (-1.0 * rayDirection)) ** kS)
+               _ ->
+                   0.0

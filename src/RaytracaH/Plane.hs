@@ -66,4 +66,4 @@ instance Arbitrary Plane where
     arbitrary = do
         arbitraryPoint <- arbitrary :: (Gen AnyVector3D)
         arbitraryNormal <- arbitrary :: (Gen AnyVector3D)
-        return $ Plane (v3d arbitraryPoint) (normalize $ v3d arbitraryNormal) (DiffusiveMaterial (Color 1.0 1.0 1.0))
+        return $ Plane (v3d arbitraryPoint) (normalize $ v3d arbitraryNormal) (Material (Color 1.0 1.0 1.0) Nothing Nothing)

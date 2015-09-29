@@ -25,18 +25,11 @@ import GHC.Generics
 
 import RaytracaH.Color
 
--- TODO: make composable materials
-data Material = DiffusiveMaterial {
-        color :: Color Float
-    } |
-    DiffusiveAndSpecularMaterial {
-        color :: Color Float,
-        kS :: Float
-    } |
-    ReflectiveMaterial {
-        color :: Color Float,
-        kR :: Float
-    } deriving (Show, Generic)
+data Material = Material {
+    color :: Color Float,
+    kS :: Maybe Float,
+    kR :: Maybe Float
+} deriving (Show, Generic)
 
 instance ToJSON Material
 instance FromJSON Material
