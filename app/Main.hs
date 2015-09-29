@@ -39,13 +39,12 @@ import RaytracaH.RayTracer
 
 -- TODO: input scene loaded from file
 sampleLights :: V.Vector Light
-sampleLights = V.fromList [Directional (Vec.normalize $ Vec.Vec3F 0.0 0.0 0.0 - Vec.Vec3F 0.0 1.0 1.0) 0.8 (Color 1 1 1),
-                           Directional (Vec.normalize $ Vec.Vec3F 0.0 0.0 0.0 - Vec.Vec3F (-1.0) 1.0 1.0) 0.3 (Color 1 1 1),
+sampleLights = V.fromList [Point (Vec.Vec3F (-8.0) 8.0 10.0) 10.0 (Color 1.0 1.0 1.0),
+                           Directional (Vec.normalize $ Vec.Vec3F 0.0 0.0 0.0 - Vec.Vec3F 0.0 1.0 1.0) 0.8 (Color 1 1 1),
                            Directional (Vec.normalize $ Vec.Vec3F 0.0 0.0 0.0 - Vec.Vec3F 1.0 1.0 1.0) 0.1 (Color 1 1 1)]
 
 sampleSpheres :: V.Vector AnyPrimitive
 sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-4.0) 0.0) (Vec.Vec3F 0.0 1.0 0.0) (Material (Color 0.78 0.78 0.78) Nothing Nothing),
-                            AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-4.0) (-35.0)) (Vec.Vec3F 0.0 0.0 1.0) (Material (Color 0.0 0.0 0.0) Nothing (Just 0.9)),
                             AnyPrimitive $ Sphere (Vec.Vec3F (-5.0) 0.0 (-5.0)) 1.0 (Material (Color 0 1 0) Nothing Nothing),
                             AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 (-5.0)) 2.0 (Material (Color 0.0 0.7 0.0) Nothing (Just 1.0)),
                             AnyPrimitive $ Sphere (Vec.Vec3F 4.0 0.0 (-3.0)) 1.0 (Material (Color 0.0 0.0 0.0) (Just 5.0) (Just 0.8)),

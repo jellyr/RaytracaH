@@ -115,7 +115,7 @@ createShadowRay :: Primitive p => RayTracerOptions -> Light.Light -> p -> Vector
 createShadowRay options light hitPrimitive hitPoint = 
     Ray.Ray (hitPoint + multvs (normalAtHitPoint hitPrimitive hitPoint) (shadowBias options)) (-vecL)
     where
-        vecL = Light.direction light
+        vecL = Light.lightDirection hitPoint light
 
 findNearestIntersectingPrimitive :: V.Vector AnyPrimitive -> Ray.Ray -> Float -> PrimitiveIntersection
 findNearestIntersectingPrimitive primitives ray lastNearestDistance = 
@@ -156,18 +156,21 @@ calculateDiffuseForHitPrimitive light hitPrimitive hitPoint =
     diffuse
     where
         nHit = normalAtHitPoint hitPrimitive hitPoint
-        diffuse = Light.intensity light * clampedToPositive (Vec.dot nHit (-1.0 * Light.direction light))
+        lightIntensity = Light.lightIntensityInPoint hitPoint light
+        diffuse = lightIntensity * clampedToPositive (Vec.dot nHit (-1.0 * Light.lightDirection hitPoint light))
 
 calculateSpecularForHitPrimitive :: Primitive p => Light.Light -> p -> Vector3D -> Vector3D -> Float
-calculateSpecularForHitPrimitive light hitPrimitive hitPoint rayDirection =
-    specular
+calculateSpecularForHitPrimitive light hitPrimitive hitPoint =
+    specularForMaterialAndReflection lightIntensity (material hitPrimitive) reflectedVec
     where
         nHit = normalAtHitPoint hitPrimitive hitPoint
-        reflectedVec = reflect (Light.direction light) nHit
-        specular =
-            case
-                material hitPrimitive
-            of Material.Material _ (Just kS) _ ->
-                   Light.intensity light * (clampedToPositive (Vec.dot reflectedVec (-1.0 * rayDirection)) ** kS)
-               _ ->
-                   0.0
+        reflectedVec = reflect (Light.lightDirection hitPoint light) nHit
+        lightIntensity = Light.lightIntensityInPoint hitPoint light
+
+specularForMaterialAndReflection :: Float -> Material.Material -> Vector3D -> Vector3D -> Float
+specularForMaterialAndReflection lightIntensity primitiveMaterial reflectedVec rayDirection =
+    case primitiveMaterial of
+        Material.Material _ (Just kS) _ ->
+            lightIntensity * (clampedToPositive (Vec.dot reflectedVec (-1.0 * rayDirection)) ** kS)
+        _ ->
+            0.0

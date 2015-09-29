@@ -21,6 +21,7 @@ limitations under the License.
 module RaytracaH.Light where
 
 import Data.Aeson
+import Data.Vec
 import GHC.Generics
 
 import RaytracaH.Color
@@ -31,10 +32,27 @@ data Light = Directional {
     direction :: Vector3D,
     intensity :: Float,
     color :: Color Float
+} | Point {
+    position :: Vector3D,
+    intensity :: Float,
+    color :: Color Float
 } deriving (Show, Generic)
 
 instance ToJSON Light
 instance FromJSON Light
+
+lightIntensityInPoint :: Vector3D -> Light -> Float
+lightIntensityInPoint _ (Directional _ dIntensity _) = dIntensity
+lightIntensityInPoint point (Point pPosition pIntensity _) =
+    pIntensity / attenuation
+    where
+        lightDir = normalize $ point - pPosition
+        attenuation = 4 * pi * norm lightDir
+
+lightDirection :: Vector3D -> Light -> Vector3D
+lightDirection _ (Directional dDirection _ _) = dDirection
+lightDirection point (Point pPosition _ _) =
+    normalize $ point - pPosition
 
 data LightFactors = LightFactors {
     diffuse :: Float,
