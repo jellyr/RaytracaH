@@ -49,5 +49,9 @@ prop_angleOfIncidenceEqualToAngleOfReflection incidenceVector normal =
         vec' = v3d incidenceVector
         normal' = normalize $ v3d normal
         reflection = reflect vec' normal'
-        angleOfIncidence = acos $ vec' `dot` normal' / (norm vec' * norm normal')
-        angleOfReflection = acos $ (-reflection) `dot` normal' / (norm reflection * norm normal')
+        angleOfIncidence = angleBetweenVectors vec' normal'
+        angleOfReflection = angleBetweenVectors (-reflection) normal'
+
+angleBetweenVectors :: Vector3D -> Vector3D -> Float
+angleBetweenVectors v1 v2 =
+    acos $ v1 `dot` v2 / (norm v1 * norm v2)
