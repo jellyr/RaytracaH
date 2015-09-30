@@ -17,9 +17,9 @@ limitations under the License.
 -}
 
 import Test.QuickCheck
-import Test.Hspec
 
 import qualified RaytracaH.Math.Test as MT
+import qualified RaytracaH.Light.Test as LT
 import qualified RaytracaH.Plane.Test as PT
 import qualified RaytracaH.Ray.Test as RT
 import qualified RaytracaH.Sphere.Test as ST
@@ -32,6 +32,7 @@ main = do
     quickCheck MT.prop_clampedToPositiveBiggerOrEqualZero
     quickCheck MT.prop_limitedToOneAllLessThanOrEqualToOne
     quickCheck MT.prop_angleOfIncidenceEqualToAngleOfReflection
+    quickCheck LT.prop_intensityForDirectionalLightIsConstant
     quickCheck PT.prop_raysDirectedAtPlaneAlwaysHit
     quickCheck PT.prop_raysNotDirectedAtPlaneAlwaysMiss
     quickCheck RT.prop_allPrimaryRaysDirectionNormalized

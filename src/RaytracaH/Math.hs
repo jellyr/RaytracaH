@@ -74,10 +74,10 @@ instance FromJSON Vector3D where
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)
 
 instance Arbitrary AnyVector3D where
-    arbitrary = vectorWithFactorsInRange (-100.0) 100.0
+    arbitrary = vectorWithTermsInRange (-100.0) 100.0
 
-vectorWithFactorsInRange :: Float -> Float -> Gen AnyVector3D
-vectorWithFactorsInRange a b = 
+vectorWithTermsInRange :: Float -> Float -> Gen AnyVector3D
+vectorWithTermsInRange a b = 
     AnyVector3D <$> v
     where
         v = Vec3F <$> choose (a, b) <*> choose (a, b) <*> choose (a, b)
