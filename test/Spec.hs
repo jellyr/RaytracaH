@@ -33,6 +33,7 @@ main = do
     quickCheck MT.prop_limitedToOneAllLessThanOrEqualToOne
     quickCheck MT.prop_angleOfIncidenceEqualToAngleOfReflection
     quickCheck LT.prop_intensityForDirectionalLightIsConstant
+    quickCheck LT.prop_intensityForPointLightDecreasesWithDistance
     quickCheck PT.prop_raysDirectedAtPlaneAlwaysHit
     quickCheck PT.prop_raysNotDirectedAtPlaneAlwaysMiss
     quickCheck RT.prop_allPrimaryRaysDirectionNormalized

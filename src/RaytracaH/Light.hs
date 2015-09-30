@@ -37,8 +37,8 @@ lightIntensityInPoint _ (Directional _ intensity ) = intensity
 lightIntensityInPoint point (Point position intensity) =
     intensity / attenuation
     where
-        lightDir = normalize $ point - position
-        attenuation = 4 * pi * norm lightDir
+        lightDirUnnormalized = point - position
+        attenuation = 4 * pi * norm lightDirUnnormalized
 
 lightDirection :: Vector3D -> Light -> Vector3D
 lightDirection _ (Directional direction _) = direction

@@ -26,11 +26,28 @@ import RaytracaH.Math
 directionalLights :: Gen Light
 directionalLights = do
     direction <- vectorWithTermsInRange 1.0 100.0
-    color <- arbitrary :: Gen Float
-    return $ Directional (v3d direction) color
+    intensity <- arbitrary :: Gen Float
+    return $ Directional (v3d direction) intensity
+
+pointLights :: Gen Light
+pointLights = do
+    position <- vectorWithTermsInRange 1.0 100.0
+    intensity <- choose (0.1, 50.0) :: Gen Float
+    return $ Point (v3d position) intensity
 
 prop_intensityForDirectionalLightIsConstant :: Property
 prop_intensityForDirectionalLightIsConstant =
     forAll (vectorWithTermsInRange 1.0 100.0) $ \point ->
         forAll directionalLights $ \light@(Directional _ intensity) ->
             lightIntensityInPoint (v3d point) light == intensity
+
+prop_intensityForPointLightDecreasesWithDistance :: Property
+prop_intensityForPointLightDecreasesWithDistance = 
+    forAll pointLights $ \light ->
+        forAll (vectorWithTermsInRange 1.0 100.0) $ \point1 ->
+            let
+                point1' = v3d point1
+                lightDir = lightDirection point1' light
+                point2 = point1' + multvs lightDir 10.0
+            in
+                lightIntensityInPoint point2 light < lightIntensityInPoint point1' light
