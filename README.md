@@ -1,6 +1,6 @@
-# raytracaH
+# RaytracaH
 
-raytracaH is ray tracer written in Haskell using functional approach.
+RaytracaH is ray tracer written in Haskell using functional approach.
 Current version is in very early stage and more features are to come soon.
 
 # Licence
