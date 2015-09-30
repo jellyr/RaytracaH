@@ -25,17 +25,9 @@ import qualified Data.Vector as V
 import Data.Time
 import System.IO
 
-import RaytracaH.Bitmap
-import RaytracaH.Camera
-import RaytracaH.Color
-import RaytracaH.Light
-import RaytracaH.Material
-import RaytracaH.Primitive
-import RaytracaH.Scene
+import RaytracaH
 import RaytracaH.Sphere
-import RaytracaH.Options
 import RaytracaH.Plane
-import RaytracaH.RayTracer
 
 -- TODO: input scene loaded from file
 sampleLights :: V.Vector Light

@@ -15,7 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     RaytracaH.RayTracer
+  exposed-modules:     RaytracaH
+                     , RaytracaH.RayTracer
                      , RaytracaH.Bitmap
                      , RaytracaH.Camera
                      , RaytracaH.Color
