@@ -17,6 +17,7 @@ More features are to come in next versions which will be released soon.
 # Screenshots
 
 ![Screenshot](http://i.imgur.com/QeoX2Ab.png)
+![Screenshot](http://i.imgur.com/H9zNJkg.png)
 
 # TODO
 
