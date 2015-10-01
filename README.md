@@ -14,6 +14,10 @@ Current version is in very early stage and more features are to come soon.
 
 More features are to come in next versions which will be released soon.
 
+# Screenshots
+
+![Screenshot](http://i.imgur.com/QeoX2Ab.png)
+
 # TODO
 
 - Optimization
