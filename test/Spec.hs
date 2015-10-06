@@ -17,6 +17,10 @@ limitations under the License.
 -}
 
 import Test.QuickCheck
+import Test.QuickCheck.Test (isSuccess)
+
+import Control.Monad (unless)
+import System.Exit (exitFailure)
 
 import qualified RaytracaH.Math.Test as MT
 import qualified RaytracaH.Light.Test as LT
@@ -26,16 +30,19 @@ import qualified RaytracaH.Sphere.Test as ST
 
 main :: IO ()
 main = do
-    quickCheck MT.prop_deg2rad
-    quickCheck MT.prop_rad2deg
-    quickCheck MT.prop_mutlvs
-    quickCheck MT.prop_clampedToPositiveBiggerOrEqualZero
-    quickCheck MT.prop_limitedToOneAllLessThanOrEqualToOne
-    quickCheck MT.prop_angleOfIncidenceEqualToAngleOfReflection
-    quickCheck LT.prop_intensityForDirectionalLightIsConstant
-    quickCheck LT.prop_intensityForPointLightDecreasesWithDistance
-    quickCheck PT.prop_raysDirectedAtPlaneAlwaysHit
-    quickCheck PT.prop_raysNotDirectedAtPlaneAlwaysMiss
-    quickCheck RT.prop_allPrimaryRaysDirectionNormalized
-    quickCheck ST.prop_hitPointAtRadiusDistance
-    quickCheck ST.prop_rayDirectedAtSphereIntersect
+    let tests = [ quickCheckResult MT.prop_deg2rad
+                , quickCheckResult MT.prop_rad2deg
+                , quickCheckResult MT.prop_mutlvs
+                , quickCheckResult MT.prop_clampedToPositiveBiggerOrEqualZero
+                , quickCheckResult MT.prop_limitedToOneAllLessThanOrEqualToOne
+                , quickCheckResult MT.prop_angleOfIncidenceEqualToAngleOfReflection
+                , quickCheckResult LT.prop_intensityForDirectionalLightIsConstant
+                , quickCheckResult LT.prop_intensityForPointLightDecreasesWithDistance
+                , quickCheckResult PT.prop_raysDirectedAtPlaneAlwaysHit
+                , quickCheckResult PT.prop_raysNotDirectedAtPlaneAlwaysMiss
+                , quickCheckResult RT.prop_allPrimaryRaysDirectionNormalized
+                , quickCheckResult ST.prop_hitPointAtRadiusDistance
+                , quickCheckResult ST.prop_rayDirectedAtSphereIntersect
+                ]
+    success <- fmap (all isSuccess) (sequence tests)
+    unless success exitFailure
