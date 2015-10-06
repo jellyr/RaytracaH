@@ -3,9 +3,10 @@ dependencies:
     - "~/.stack"
   pre:
     - wget https://github.com/commercialhaskell/stack/releases/download/v0.1.5.0/stack-0.1.5.0-x86_64-linux.tar.gz -O /tmp/stack.tar.gz
-    - tar -xf /tmp/stack.tar.gz
-    - sudo mv /tmp/stack-0.1.5.0-x86_64-linux/stack /usr/bin/stack
-    - rm -r /tmp/stack-0.1.5.0-x86_64-linux
+    - mkdir /tmp/stack
+    - tar -xf /tmp/stack.tar.gz -C /tmp/stack
+    - sudo mv /tmp/stack/stack-0.1.5.0-x86_64-linux/stack /usr/bin/stack
+    - rm -r /tmp/stack
   override:
     - stack setup
     - stack build
