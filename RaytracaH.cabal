@@ -59,7 +59,6 @@ test-suite RaytracaH-test
   build-depends:       base
                      , RaytracaH
                      , QuickCheck
-                     , hspec
                      , vector
                      , Vec >= 1.0.5
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
