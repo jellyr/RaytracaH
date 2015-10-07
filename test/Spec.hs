@@ -21,9 +21,8 @@ import Test.Tasty.QuickCheck as QC
 
 import qualified RaytracaH.Math.Test as MT
 import qualified RaytracaH.Light.Test as LT
-import qualified RaytracaH.Plane.Test as PT
+import qualified RaytracaH.Primitive.Test as PT
 import qualified RaytracaH.Ray.Test as RT
-import qualified RaytracaH.Sphere.Test as ST
 
 main :: IO ()
 main = defaultMain tests
@@ -46,7 +45,7 @@ qcProps = testGroup "(checked by QuickCheck)"
     , QC.testProperty "intensityForPointLightDecreasesWithDistance" LT.prop_intensityForPointLightDecreasesWithDistance
     , QC.testProperty "raysDirectedAtPlaneAlwaysHit" PT.prop_raysDirectedAtPlaneAlwaysHit
     , QC.testProperty "raysNotDirectedAtPlaneAlwaysMiss" PT.prop_raysNotDirectedAtPlaneAlwaysMiss
+    , QC.testProperty "hitPointAtRadiusDistance" PT.prop_hitPointAtRadiusDistance
+    , QC.testProperty "rayDirectedAtSphereIntersect" PT.prop_rayDirectedAtSphereIntersect
     , QC.testProperty "allPrimaryRaysDirectionNormalized" RT.prop_allPrimaryRaysDirectionNormalized
-    , QC.testProperty "hitPointAtRadiusDistance" ST.prop_hitPointAtRadiusDistance
-    , QC.testProperty "rayDirectedAtSphereIntersect" ST.prop_rayDirectedAtSphereIntersect
     ]

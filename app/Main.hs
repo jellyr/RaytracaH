@@ -26,8 +26,6 @@ import Data.Time
 import System.IO
 
 import RaytracaH
-import RaytracaH.Sphere
-import RaytracaH.Plane
 
 -- TODO: input scene loaded from file
 sampleLights :: V.Vector Light
@@ -35,14 +33,14 @@ sampleLights = V.fromList [Point (Vec.Vec3F (-8.0) 8.0 10.0) 70.0,
                            Point (Vec.Vec3F 0.0 8.0 8.0) 70.0,
                            Point (Vec.Vec3F 8.0 8.0 8.0) 40.0]
 
-sampleSpheres :: V.Vector AnyPrimitive
-sampleSpheres = V.fromList [AnyPrimitive $ Plane (Vec.Vec3F 0.0 (-4.0) 0.0) (Vec.Vec3F 0.0 1.0 0.0) (Material (Color 0.78 0.78 0.78) Nothing Nothing),
-                            AnyPrimitive $ Sphere (Vec.Vec3F (-5.0) 0.0 (-5.0)) 1.0 (Material (Color 0 1 0) Nothing Nothing),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 (-5.0)) 2.0 (Material (Color 0.0 0.0 0.0) Nothing (Just 0.9)),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 4.0 0.0 (-3.0)) 1.0 (Material (Color 0.0 0.0 0.0) (Just 5.0) (Just 0.9)),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 5.0 (-5.0)) 2.0 (Material (Color 1 1 1) (Just 5.0) Nothing),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 3.0 (-10.0)) 2.0 (Material (Color 1 0 0) Nothing Nothing),
-                            AnyPrimitive $ Sphere (Vec.Vec3F 0.0 0.0 6.0) 1.0 (Material (Color (227.0/255.0) (166.0/255.0) 0) (Just 5.0) Nothing)]
+sampleSpheres :: V.Vector Primitive
+sampleSpheres = V.fromList [Plane (Vec.Vec3F 0.0 (-4.0) 0.0) (Vec.Vec3F 0.0 1.0 0.0) (Material (Color 0.78 0.78 0.78) Nothing Nothing),
+                            Sphere (Vec.Vec3F (-5.0) 0.0 (-5.0)) 1.0 (Material (Color 0 1 0) Nothing Nothing),
+                            Sphere (Vec.Vec3F 0.0 0.0 (-5.0)) 2.0 (Material (Color 0.0 0.0 0.0) Nothing (Just 0.9)),
+                            Sphere (Vec.Vec3F 4.0 0.0 (-3.0)) 1.0 (Material (Color 0.0 0.0 0.0) (Just 5.0) (Just 0.9)),
+                            Sphere (Vec.Vec3F 0.0 5.0 (-5.0)) 2.0 (Material (Color 1 1 1) (Just 5.0) Nothing),
+                            Sphere (Vec.Vec3F 0.0 3.0 (-10.0)) 2.0 (Material (Color 1 0 0) Nothing Nothing),
+                            Sphere (Vec.Vec3F 0.0 0.0 6.0) 1.0 (Material (Color (227.0/255.0) (166.0/255.0) 0) (Just 5.0) Nothing)]
 
 sampleScene :: Scene
 sampleScene = Scene sampleLights sampleSpheres

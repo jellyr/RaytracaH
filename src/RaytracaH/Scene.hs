@@ -29,7 +29,7 @@ import RaytracaH.Primitive
 
 data Scene = Scene {
     lights :: V.Vector Light,
-    objects :: V.Vector AnyPrimitive
+    objects :: V.Vector Primitive
 } deriving (Generic)
 
 instance ToJSON Scene
