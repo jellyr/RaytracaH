@@ -24,7 +24,7 @@ import RaytracaH.Math
 
 prop_deg2rad :: Float -> Bool
 prop_deg2rad deg = 
-    deg2rad deg == 2 * deg * pi / 180.0
+    deg2rad deg == deg * pi / 180.0
 
 prop_rad2deg :: Float -> Bool
 prop_rad2deg rad = 
