@@ -1,6 +1,6 @@
 # RaytracaH
 
-[![Circle CI](https://circleci.com/gh/rafalnowak/RaytracaH.svg?style=svg)](https://circleci.com/gh/rafalnowak/RaytracaH)
+[![Circle CI](https://circleci.com/gh/rafalnowak/RaytracaH.svg?style=svg)](https://circleci.com/gh/rafalnowak/RaytracaH) [![Build Status](https://travis-ci.org/rafalnowak/RaytracaH.svg?branch=master)](https://travis-ci.org/rafalnowak/RaytracaH)
 
 RaytracaH is ray tracer written in Haskell using functional approach.
 Current version is in very early stage and more features are to come soon.
