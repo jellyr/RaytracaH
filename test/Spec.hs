@@ -16,11 +16,8 @@ limitations under the License.
 
 -}
 
-import Test.QuickCheck
-import Test.QuickCheck.Test (isSuccess)
-
-import Control.Monad (unless)
-import System.Exit (exitFailure)
+import Test.Tasty
+import Test.Tasty.QuickCheck as QC
 
 import qualified RaytracaH.Math.Test as MT
 import qualified RaytracaH.Light.Test as LT
@@ -29,20 +26,27 @@ import qualified RaytracaH.Ray.Test as RT
 import qualified RaytracaH.Sphere.Test as ST
 
 main :: IO ()
-main = do
-    let tests = [ quickCheckResult MT.prop_deg2rad
-                , quickCheckResult MT.prop_rad2deg
-                , quickCheckResult MT.prop_mutlvs
-                , quickCheckResult MT.prop_clampedToPositiveBiggerOrEqualZero
-                , quickCheckResult MT.prop_limitedToOneAllLessThanOrEqualToOne
-                , quickCheckResult MT.prop_angleOfIncidenceEqualToAngleOfReflection
-                , quickCheckResult LT.prop_intensityForDirectionalLightIsConstant
-                , quickCheckResult LT.prop_intensityForPointLightDecreasesWithDistance
-                , quickCheckResult PT.prop_raysDirectedAtPlaneAlwaysHit
-                , quickCheckResult PT.prop_raysNotDirectedAtPlaneAlwaysMiss
-                , quickCheckResult RT.prop_allPrimaryRaysDirectionNormalized
-                , quickCheckResult ST.prop_hitPointAtRadiusDistance
-                , quickCheckResult ST.prop_rayDirectedAtSphereIntersect
-                ]
-    success <- fmap (all isSuccess) (sequence tests)
-    unless success exitFailure
+main = defaultMain tests
+
+tests :: TestTree
+tests = testGroup "All" [properties]
+
+properties :: TestTree
+properties = testGroup "Properties" [qcProps]
+
+qcProps :: TestTree
+qcProps = testGroup "(checked by QuickCheck)"
+    [ QC.testProperty "deg2rad" MT.prop_deg2rad
+    , QC.testProperty "rad2deg" MT.prop_rad2deg
+    , QC.testProperty "pmutlvs" MT.prop_mutlvs
+    , QC.testProperty "clampedToPositiveBiggerOrEqualZero" MT.prop_clampedToPositiveBiggerOrEqualZero
+    , QC.testProperty "limitedToOneAllLessThanOrEqualToOne" MT.prop_limitedToOneAllLessThanOrEqualToOne
+    , QC.testProperty "angleOfIncidenceEqualToAngleOfReflection" MT.prop_angleOfIncidenceEqualToAngleOfReflection
+    , QC.testProperty "intensityForDirectionalLightIsConstant" LT.prop_intensityForDirectionalLightIsConstant
+    , QC.testProperty "intensityForPointLightDecreasesWithDistance" LT.prop_intensityForPointLightDecreasesWithDistance
+    , QC.testProperty "raysDirectedAtPlaneAlwaysHit" PT.prop_raysDirectedAtPlaneAlwaysHit
+    , QC.testProperty "raysNotDirectedAtPlaneAlwaysMiss" PT.prop_raysNotDirectedAtPlaneAlwaysMiss
+    , QC.testProperty "allPrimaryRaysDirectionNormalized" RT.prop_allPrimaryRaysDirectionNormalized
+    , QC.testProperty "hitPointAtRadiusDistance" ST.prop_hitPointAtRadiusDistance
+    , QC.testProperty "rayDirectedAtSphereIntersect" ST.prop_rayDirectedAtSphereIntersect
+    ]
