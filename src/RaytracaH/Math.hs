@@ -24,6 +24,7 @@ module RaytracaH.Math where
 
 import Test.QuickCheck (Gen, Arbitrary(..), choose)
 
+import Control.Applicative
 import Data.Aeson
 import Data.Vec
 
@@ -68,7 +69,7 @@ instance FromJSON Vector3D where
     parseJSON (Object o) =
         Vec3F <$> o .: "x" <*> o .: "y" <*> o .: "z"
     parseJSON _ =
-        fail "Could not parse Vector 3D"
+        empty
 
 -- TODO: remove this new type and use type synonim instances and flexible instances as in Aeson typeclasses
 newtype AnyVector3D = AnyVector3D { v3d :: Vector3D } deriving (Eq, Show)

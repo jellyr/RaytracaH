@@ -20,6 +20,7 @@ limitations under the License.
 
 module RaytracaH.Color where
 
+import Control.Applicative
 import Data.Aeson
 
 data Color a = Color a a a deriving (Show)
@@ -47,3 +48,5 @@ instance ToJSON a => ToJSON (Color a) where
 instance FromJSON a => FromJSON (Color a) where
     parseJSON (Object o) =
         Color <$> o .: "r" <*> o .: "g" <*> o .: "b"
+    parseJSON _ =
+        empty
