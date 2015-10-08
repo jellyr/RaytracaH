@@ -16,31 +16,67 @@ limitations under the License.
 
 -}
 
-{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module RaytracaH.Primitive where
 
-import Data.Aeson
+import Test.QuickCheck (Arbitrary(..), Gen, choose)
 
+import Data.Aeson
+import Data.Vec (dot, normalize)
+import GHC.Generics
+
+import RaytracaH.Color
 import RaytracaH.Material
 import RaytracaH.Math
-import RaytracaH.Ray (Ray)
+import RaytracaH.Ray (Ray(..))
 
 data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
 
-class Primitive a where
-    intersect :: a -> Ray -> IntersectionResult
-    normalAtHitPoint :: a -> Vector3D -> Vector3D
-    material :: a -> Material
+data Primitive = Plane {
+    planePoint :: Vector3D,
+    planeNormal :: Vector3D,
+    material :: Material } | Sphere {
+    center :: Vector3D,
+    radius :: Float,
+    material :: Material } deriving (Show, Generic)
 
--- TODO: eliminate existential type
-data AnyPrimitive = forall p . (Primitive p, ToJSON p) => AnyPrimitive p
+instance ToJSON Primitive
+instance FromJSON Primitive
 
-instance Primitive AnyPrimitive where 
-    intersect (AnyPrimitive p) = intersect p
-    normalAtHitPoint (AnyPrimitive p) = normalAtHitPoint p
-    material (AnyPrimitive p) = material p
+intersect :: Primitive -> Ray -> IntersectionResult
+intersect (Plane pPoint pNormal _) (Ray rayOrigin rayDir) = 
+    if distance >= 0 then
+        Intersection distance
+    else
+        NoIntersection
+    where
+        distance = ((pPoint - rayOrigin) `dot` pNormal) / (pNormal `dot` rayDir)
+intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) =
+    if tca < 0 || dSquared > rSquared || all (< 0.0) distanceParams || any isNaN distanceParams then
+        NoIntersection
+    else
+        Intersection (minimum (filter (>= 0.0) distanceParams))
+    where
+        vecL = sphereCenter - rayOrigin
+        tca = vecL `dot` rayDir
+        dSquared = vecL `dot` vecL - tca * tca
+        rSquared = sphereRadius * sphereRadius
+        thc = sqrt (rSquared - dSquared)
+        distanceParams = [tca - thc, tca + thc]
 
-instance ToJSON AnyPrimitive where
-    toJSON (AnyPrimitive p) = toJSON p
+normalAtHitPoint :: Primitive -> Vector3D -> Vector3D
+normalAtHitPoint (Plane _ normal _) _ = normal
+normalAtHitPoint (Sphere center _ _) hitPoint = normalize (hitPoint - center)
 
+arbitrarySphere :: Gen Primitive
+arbitrarySphere = do
+    sphereCenter <- arbitrary :: (Gen AnyVector3D)
+    sphereRadius <- choose (1.0, 100.0)
+    return $ Sphere (v3d sphereCenter) sphereRadius (Material (Color 1.0 1.0 1.0) Nothing Nothing)
+
+arbitraryPlane :: Gen Primitive
+arbitraryPlane = do
+    arbitraryPoint <- arbitrary :: (Gen AnyVector3D)
+    arbitraryNormal <- arbitrary :: (Gen AnyVector3D)
+    return $ Plane (v3d arbitraryPoint) (normalize $ v3d arbitraryNormal) (Material (Color 1.0 1.0 1.0) Nothing Nothing)

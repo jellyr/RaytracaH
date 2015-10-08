@@ -1,0 +1,183 @@
+{
+    "camera": {
+        "fov": 30,
+        "position": {
+            "x": 0.0,
+            "y": 5,
+            "z": 35
+        },
+        "target": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "up": {
+            "x": 0.0,
+            "y": 1,
+            "z": 0.0
+        }
+    },
+    "scene": {
+        "lights": [
+            {
+                "tag": "Point",
+                "intensity": 70,
+                "pos": {
+                    "x": -8,
+                    "y": 8,
+                    "z": 10
+                }
+            },
+            {
+                "tag": "Point",
+                "intensity": 70,
+                "pos": {
+                    "x": 0.0,
+                    "y": 8,
+                    "z": 8
+                }
+            },
+            {
+                "tag": "Point",
+                "intensity": 40,
+                "pos": {
+                    "x": 8,
+                    "y": 8,
+                    "z": 8
+                }
+            }
+        ],
+        "objects": [
+            {
+                "tag": "Plane",
+                "planeNormal": {
+                    "x": 0.0,
+                    "y": 1,
+                    "z": 0.0
+                },
+                "planePoint": {
+                    "x": 0.0,
+                    "y": -4,
+                    "z": 0.0
+                },
+                "material": {
+                    "color": {
+                        "r": 0.78,
+                        "g": 0.78,
+                        "b": 0.78
+                    },
+                    "kR": null,
+                    "kS": null
+                }
+            },
+            {
+                "tag": "Sphere",
+                "center": {
+                    "x": -5,
+                    "y": 0.0,
+                    "z": -5
+                },
+                "radius": 1,
+                "material": {
+                    "color": {
+                        "r": 0.0,
+                        "g": 1,
+                        "b": 0.0
+                    },
+                    "kR": null,
+                    "kS": null
+                }
+            },
+            {
+                "tag": "Sphere",
+                "center": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -5
+                },
+                "radius": 2,
+                "material": {
+                    "color": {
+                        "r": 0.0,
+                        "g": 0.0,
+                        "b": 0.0
+                    },
+                    "kR": 0.9,
+                    "kS": null
+                }
+            },
+            {
+                "radius": 1,
+                "center": {
+                    "x": 4,
+                    "y": 0.0,
+                    "z": -3
+                },
+                "tag": "Sphere",
+                "material": {
+                    "color": {
+                        "r": 0.0,
+                        "g": 0.0,
+                        "b": 0.0
+                    },
+                    "kR": 0.9,
+                    "kS": 5
+                }
+            },
+            {
+                "tag": "Sphere",
+                "center": {
+                    "x": 0.0,
+                    "y": 5,
+                    "z": -5
+                },
+                "radius": 2,
+                "material": {
+                    "color": {
+                        "r": 1,
+                        "g": 1,
+                        "b": 1
+                    },
+                    "kR": null,
+                    "kS": 5
+                }
+            },
+            {
+                "tag": "Sphere",
+                "radius": 2,
+                "center": {
+                    "x": 0.0,
+                    "y": 3,
+                    "z": -10
+                },
+                "material": {
+                    "color": {
+                        "r": 1,
+                        "g": 0.0,
+                        "b": 0.0
+                    },
+                    "kR": null,
+                    "kS": null
+                }
+            },
+            {
+                "tag": "Sphere",
+                "radius": 1,
+                "center": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 6
+                },
+                "material": {
+                    "color": {
+                        "r": 0.8901961,
+                        "g": 0.6509804,
+                        "b": 0.0
+                    },
+                    "kR": null,
+                    "kS": 5
+                }
+            }
+        ]
+    }
+}

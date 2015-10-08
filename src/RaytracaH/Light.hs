@@ -27,15 +27,19 @@ import GHC.Generics
 import RaytracaH.Math
 
 -- TODO: use light color in calculations
-data Light = Directional Vector3D Float | Point Vector3D Float deriving (Show, Generic)
+data Light = Directional {
+    dir :: Vector3D,
+    intensity :: Float } | Point {
+    pos :: Vector3D,
+    intensity :: Float } deriving (Show, Generic)
 
 instance ToJSON Light
 instance FromJSON Light
 
 lightIntensityInPoint :: Vector3D -> Light -> Float
-lightIntensityInPoint _ (Directional _ intensity ) = intensity
-lightIntensityInPoint point (Point position intensity) =
-    intensity / attenuation
+lightIntensityInPoint _ (Directional _ lightIntensity) = lightIntensity
+lightIntensityInPoint point (Point position lightIntensity) =
+    lightIntensity / attenuation
     where
         lightDirUnnormalized = point - position
         attenuation = 4 * pi * norm lightDirUnnormalized

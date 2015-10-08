@@ -24,13 +24,22 @@ import Data.Aeson
 import qualified Data.Vector as V
 import GHC.Generics
 
+import RaytracaH.Camera
 import RaytracaH.Light
 import RaytracaH.Primitive
 
 data Scene = Scene {
     lights :: V.Vector Light,
-    objects :: V.Vector AnyPrimitive
-} deriving (Generic)
+    objects :: V.Vector Primitive
+} deriving (Show, Generic)
 
 instance ToJSON Scene
+instance FromJSON Scene
+
+data SceneWithCamera = SceneWithCamera {
+    scene :: Scene,
+    camera :: Camera } deriving (Show, Generic)
+
+instance ToJSON SceneWithCamera
+instance FromJSON SceneWithCamera
 

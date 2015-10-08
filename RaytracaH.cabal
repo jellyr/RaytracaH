@@ -24,12 +24,10 @@ library
                      , RaytracaH.Material
                      , RaytracaH.Math
                      , RaytracaH.Options
-                     , RaytracaH.Plane
                      , RaytracaH.Primitive
                      , RaytracaH.Ray
                      , RaytracaH.Scene
                      , RaytracaH.Screen
-                     , RaytracaH.Sphere
   build-depends:       base >= 4.7 && < 5
                      , aeson
                      , bytestring

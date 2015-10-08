@@ -18,15 +18,78 @@ limitations under the License.
 
 module RaytracaH.Primitive.Test where
 
+import Test.QuickCheck
+
+import qualified Data.Vec as Vec
+
+import RaytracaH.Math
 import RaytracaH.Primitive
 import RaytracaH.Ray
 
-rayHitPrimitive :: Primitive a => a -> Ray -> Bool
+rayHitPrimitive :: Primitive -> Ray -> Bool
 rayHitPrimitive primitive ray =
     case intersection of Intersection _ -> True
                          NoIntersection -> False
     where
         intersection = primitive `intersect` ray
 
-rayMissPrimitive :: Primitive a => a -> Ray -> Bool
+rayMissPrimitive :: Primitive -> Ray -> Bool
 rayMissPrimitive primitive ray = not $ rayHitPrimitive primitive ray
+
+raysDirectedAtPlane :: Primitive -> Gen Ray
+raysDirectedAtPlane (Plane planePoint _ _) = do
+    rayOrigin <- arbitrary :: (Gen AnyVector3D)
+    return $ Ray (v3d rayOrigin) (Vec.normalize $ planePoint - v3d rayOrigin)
+raysDirectedAtPlane _ = undefined
+
+prop_raysDirectedAtPlaneAlwaysHit :: Property
+prop_raysDirectedAtPlaneAlwaysHit =
+    forAll arbitraryPlane $ \plane ->
+        forAll (raysDirectedAtPlane plane) $ \ray ->
+            rayHitPrimitive plane ray
+
+prop_raysNotDirectedAtPlaneAlwaysMiss :: Property
+prop_raysNotDirectedAtPlaneAlwaysMiss =
+    forAll arbitraryPlane $ \plane ->
+        forAll (raysDirectedAtPlane plane) $ \ray ->
+            rayMissPrimitive plane (Ray (origin ray) (- (direction ray)))
+
+raysOutsideSphere :: Primitive -> Gen Ray
+raysOutsideSphere (Sphere center radius _) = do
+    xDistance <- choose (radius * 1.2, radius * 2.0)
+    yDistance <- choose (radius * 1.2, radius * 2.0)
+    zDistance <- choose (radius * 1.2, radius * 2.0)
+    rayDirection <- arbitrary :: (Gen AnyVector3D)
+    return $ Ray (center + Vec.Vec3F xDistance yDistance zDistance) (Vec.normalize $ v3d rayDirection)
+raysOutsideSphere _ = undefined
+
+prop_hitPointAtRadiusDistance :: Property
+prop_hitPointAtRadiusDistance = 
+    forAll arbitrarySphere $ \sphere ->
+        forAll (raysOutsideSphere sphere) $ \ray ->
+            rayHitPointAtRadius sphere ray
+
+rayHitPointAtRadius :: Primitive -> Ray -> Bool
+rayHitPointAtRadius sphere@(Sphere center radius _) ray = 
+    case intersection of Intersection distance ->
+                             let
+                                hitPoint = pointOnRay ray distance
+                             in
+                                equalsCustomEpsilon 1e-4 (Vec.norm $ center - hitPoint) radius
+                         _ ->
+                             True
+    where
+        intersection = sphere `intersect` ray
+rayHitPointAtRadius _ _ = undefined
+
+raysDirectedAtSphere :: Primitive -> Gen Ray
+raysDirectedAtSphere sphere@(Sphere center _ _) = do
+    (Ray rayOrigin _) <- raysOutsideSphere sphere
+    return $ Ray rayOrigin (Vec.normalize $ center - rayOrigin)
+raysDirectedAtSphere _ = undefined
+
+prop_rayDirectedAtSphereIntersect :: Property
+prop_rayDirectedAtSphereIntersect =
+    forAll arbitrarySphere $ \sphere ->
+        forAll (raysDirectedAtSphere sphere) $ \ray ->
+            rayHitPrimitive sphere ray
