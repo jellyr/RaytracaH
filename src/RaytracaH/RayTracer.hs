@@ -36,8 +36,8 @@ import qualified Data.Vector as V
 data PrimitiveIntersection = IntersectionWithPrimitive Primitive IntersectionResult |
                              NoIntersectionWithPrimitive
 
-fileWithRenderedImage :: Camera -> RayTracerOptions -> Scene.Scene -> PPMFile
-fileWithRenderedImage camera options scene = 
+fileWithRenderedImage :: RayTracerOptions -> Scene.SceneWithCamera -> PPMFile
+fileWithRenderedImage options (Scene.SceneWithCamera scene camera) = 
     PPMFile (PPMFileHeader screenW screenH 255) (render screen camera options scene)
     where
         screenW = imgWidth options

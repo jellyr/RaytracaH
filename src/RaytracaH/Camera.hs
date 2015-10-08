@@ -16,9 +16,13 @@ limitations under the License.
 
 -}
 
+{-# LANGUAGE DeriveGeneric #-}
+
 module RaytracaH.Camera where
 
+import Data.Aeson
 import Data.Vec
+import GHC.Generics
 
 import RaytracaH.Math
 
@@ -27,7 +31,10 @@ data Camera = Camera {
     target :: Vector3D,
     up :: Vector3D,
     fov :: Float
-}
+} deriving (Show, Generic)
+
+instance ToJSON Camera
+instance FromJSON Camera
 
 pointToCameraSpace :: Camera -> Vector3D -> Vector3D
 pointToCameraSpace camera v =

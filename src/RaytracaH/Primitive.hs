@@ -33,19 +33,25 @@ import RaytracaH.Ray (Ray(..))
 
 data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
 
-data Primitive = Plane Vector3D Vector3D Material | Sphere Vector3D Float Material deriving (Show, Generic)
+data Primitive = Plane {
+    planePoint :: Vector3D,
+    planeNormal :: Vector3D,
+    material :: Material } | Sphere {
+    center :: Vector3D,
+    radius :: Float,
+    material :: Material } deriving (Show, Generic)
 
 instance ToJSON Primitive
 instance FromJSON Primitive
 
 intersect :: Primitive -> Ray -> IntersectionResult
-intersect (Plane planePoint planeNormal _) (Ray rayOrigin rayDir) = 
+intersect (Plane pPoint pNormal _) (Ray rayOrigin rayDir) = 
     if distance >= 0 then
         Intersection distance
     else
         NoIntersection
     where
-        distance = ((planePoint - rayOrigin) `dot` planeNormal) / (planeNormal `dot` rayDir)
+        distance = ((pPoint - rayOrigin) `dot` pNormal) / (pNormal `dot` rayDir)
 intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) =
     if tca < 0 || dSquared > rSquared || all (< 0.0) distanceParams || any isNaN distanceParams then
         NoIntersection
@@ -62,10 +68,6 @@ intersect (Sphere sphereCenter sphereRadius _) (Ray rayOrigin rayDir) =
 normalAtHitPoint :: Primitive -> Vector3D -> Vector3D
 normalAtHitPoint (Plane _ normal _) _ = normal
 normalAtHitPoint (Sphere center _ _) hitPoint = normalize (hitPoint - center)
-
-material :: Primitive -> Material
-material (Plane _ _ m) = m
-material (Sphere _ _ m) = m
 
 arbitrarySphere :: Gen Primitive
 arbitrarySphere = do
