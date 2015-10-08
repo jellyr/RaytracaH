@@ -18,6 +18,8 @@ limitations under the License.
 
 module RaytracaH.RayTracer where
 
+import Control.Applicative
+
 import RaytracaH.Bitmap
 import RaytracaH.Camera
 import RaytracaH.Color
@@ -79,7 +81,7 @@ traceRayForReflectiveSurface options scene prevDepth originalRay hitPrimitive hi
         reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
         reflectRayDirection = reflect (Ray.direction originalRay) nHit
         colorFromReflections = 
-            (\col -> kR * col) <$> traceRay options scene (prevDepth + 1) (Ray.Ray reflectRayOrigin reflectRayDirection)
+            liftA (\col -> kR * col) (traceRay options scene (prevDepth + 1) (Ray.Ray reflectRayOrigin reflectRayDirection))
         lightsColor = 
             sumLightsEffect options scene hitPrimitive (rayHitPoint originalRay hitDistance) (Ray.direction originalRay)
     in

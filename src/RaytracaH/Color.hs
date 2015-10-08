@@ -21,12 +21,15 @@ limitations under the License.
 module RaytracaH.Color where
 
 import Data.Aeson
-import Data.Text
 
 data Color a = Color a a a deriving (Show)
 
 instance Functor Color where
     fmap f (Color rr gg bb) = Color (f rr) (f gg) (f bb)
+
+instance Applicative Color where
+    pure f = Color f f f
+    (Color f _ _) <*> (Color r g b) = Color (f r) (f g) (f b)
 
 sumColors :: (Num a, Ord a) => a -> Color a -> Color a -> Color a
 sumColors limit (Color rA gA bA) (Color rB gB bB) = Color sumR sumG sumB
