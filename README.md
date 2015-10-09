@@ -25,7 +25,6 @@ More features are to come in next versions which will be released soon.
 
 - Optimization
 - More primitive types
-- Scene and camera configuration loaded from file (probably *.json in first versions)
 - Lights with colors
 - Textures
 - Antialiasing (with supersampling for example)
