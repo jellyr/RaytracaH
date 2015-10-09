@@ -52,11 +52,11 @@ main = do
         Right options -> do
             putStrLn "Loaded options from config.json"
             sceneWithCameraDecoded <- loadSceneWithCamera "sceneWithCamera.json"
-            case sceneWithCameraDecoded of 
+            case sceneWithCameraDecoded of
                 Left err -> putStrLn err
                 Right sceneWithCamera -> do
                     putStrLn "Loaded scene with camera from file"
-                    writeAsciiPPMFile (outputFileName options) (fileWithRenderedImage options sceneWithCamera)
+                    writeAsciiPPMFile (outputFileName options) (fileWithRender options sceneWithCamera)
     endTime <- getCurrentTime
     putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
     print $ diffUTCTime endTime startTime

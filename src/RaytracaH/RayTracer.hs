@@ -35,21 +35,18 @@ import RaytracaH.Screen
 import qualified Data.Vec as Vec
 import qualified Data.Vector as V
 
-data PrimitiveIntersection = IntersectionWithPrimitive Primitive IntersectionResult |
-                             NoIntersectionWithPrimitive
-
-fileWithRenderedImage :: RayTracerOptions -> Scene.SceneWithCamera -> PPMFile
-fileWithRenderedImage options (Scene.SceneWithCamera scene camera) = 
-    PPMFile (PPMFileHeader screenW screenH 255) (render screen camera options scene)
+fileWithRender :: RayTracerOptions -> Scene.SceneWithCamera -> PPMFile
+fileWithRender options (Scene.SceneWithCamera scene camera) =
+    PPMFile (PPMFileHeader screenW screenH 255) (render options scene screen camera)
     where
         screenW = imgWidth options
         screenH = imgHeight options
         screen = Screen screenW screenH
 
-render :: Screen -> Camera -> RayTracerOptions -> Scene.Scene -> Pixels
-render screen camera options scene
+render :: RayTracerOptions -> Scene.Scene -> Screen -> Camera -> Pixels
+render options scene screen camera
     | V.null (Scene.objects scene) = V.map (const $ fromColor (backgroundColor options)) primaryRays
-    | otherwise = 
+    | otherwise =
         V.map (fromColor . traceRay options scene 1) primaryRays
     where
         primaryRays = Ray.generatePrimaryRays screen camera
@@ -57,17 +54,17 @@ render screen camera options scene
 traceRay :: RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> Color Float
 traceRay options scene depth ray
     | depth >= 5 = backgroundColor options
-    | otherwise = case primitiveWithIntersection of IntersectionWithPrimitive hitPrimitive (Intersection hitDistance) -> 
+    | otherwise = case primitiveWithIntersection of IntersectionWithPrimitive hitPrimitive (Intersection hitDistance) ->
                                                         traceRayBasedOnMaterial options scene depth ray hitPrimitive hitDistance
-                                                    _ -> 
+                                                    _ ->
                                                         backgroundColor options
                   where
                       primitiveWithIntersection = findNearestIntersectingPrimitive (Scene.objects scene) ray (infinityDistance options)
 
 traceRayBasedOnMaterial :: RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> Primitive -> Float -> Color Float
 traceRayBasedOnMaterial options scene prevDepth ray hitPrimitive hitDistance =
-    case 
-        material hitPrimitive 
+    case
+        material hitPrimitive
     of Material.Material _ _ (Just kR) ->
            traceRayForReflectiveSurface options scene prevDepth ray hitPrimitive hitDistance kR
        _ ->
@@ -80,9 +77,9 @@ traceRayForReflectiveSurface options scene prevDepth originalRay hitPrimitive hi
         nHit = normalAtHitPoint hitPrimitive hitPoint
         reflectRayOrigin = hitPoint + multvs nHit (shadowBias options)
         reflectRayDirection = reflect (Ray.direction originalRay) nHit
-        colorFromReflections = 
+        colorFromReflections =
             liftA (\col -> kR * col) (traceRay options scene (prevDepth + 1) (Ray.Ray reflectRayOrigin reflectRayDirection))
-        lightsColor = 
+        lightsColor =
             sumLightsEffect options scene hitPrimitive (rayHitPoint originalRay hitDistance) (Ray.direction originalRay)
     in
         sumColors 1.0 colorFromReflections lightsColor
@@ -91,13 +88,13 @@ rayHitPoint :: Ray.Ray -> Float -> Vector3D
 rayHitPoint = Ray.pointOnRay
 
 sumLightsEffect :: RayTracerOptions -> Scene.Scene -> Primitive -> Vector3D -> Vector3D -> Color Float
-sumLightsEffect options scene hitPrimitive hitPoint rayDirection = 
-    (\c -> limitedToOne (diffuse * c + specular)) <$> Material.color (material hitPrimitive)
+sumLightsEffect options scene hitPrimitive hitPoint rayDirection =
+    liftA (\c -> limitedToOne (diffuse * c + specular)) (Material.color (material hitPrimitive))
     where
         Light.LightFactors diffuse specular = phongFactors options scene hitPrimitive hitPoint rayDirection
 
 phongFactors :: RayTracerOptions -> Scene.Scene -> Primitive -> Vector3D -> Vector3D -> Light.LightFactors
-phongFactors options scene hitPrimitive hitPoint rayDirection = 
+phongFactors options scene hitPrimitive hitPoint rayDirection =
     V.foldl' (\previousLightFactors light ->
         let
             lightFactors = phongFactorForLight options (Scene.objects scene) light hitPrimitive hitPoint rayDirection
@@ -106,7 +103,7 @@ phongFactors options scene hitPrimitive hitPoint rayDirection =
     ) (Light.LightFactors 0.0 0.0) (Scene.lights scene)
 
 isHitPrimitiveInShadow :: RayTracerOptions -> V.Vector Primitive -> Light.Light -> Primitive -> Vector3D -> Bool
-isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint = 
+isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint =
     case intersectionWithShadowRay of IntersectionWithPrimitive _ _ -> True
                                       _ -> False
     where
@@ -114,23 +111,23 @@ isHitPrimitiveInShadow options primitives light hitPrimitive hitPoint =
         intersectionWithShadowRay = findNearestIntersectingPrimitive primitives shadowRay (infinityDistance options)
 
 createShadowRay :: RayTracerOptions -> Light.Light -> Primitive -> Vector3D -> Ray.Ray
-createShadowRay options light hitPrimitive hitPoint = 
+createShadowRay options light hitPrimitive hitPoint =
     Ray.Ray (hitPoint + multvs (normalAtHitPoint hitPrimitive hitPoint) (shadowBias options)) (-vecL)
     where
         vecL = Light.lightDirection hitPoint light
 
 findNearestIntersectingPrimitive :: V.Vector Primitive -> Ray.Ray -> Float -> PrimitiveIntersection
-findNearestIntersectingPrimitive primitives ray lastNearestDistance = 
+findNearestIntersectingPrimitive primitives ray lastNearestDistance =
     findNearestIntersectingPrimitiveIter primitives ray lastNearestDistance NoIntersectionWithPrimitive
 
 findNearestIntersectingPrimitiveIter :: V.Vector Primitive -> Ray.Ray -> Float -> PrimitiveIntersection -> PrimitiveIntersection
 findNearestIntersectingPrimitiveIter primitives ray lastNearestDistance result
     | V.null primitives = result
     | otherwise =
-        case intersection of NoIntersection -> 
+        case intersection of NoIntersection ->
                                  proceedWithNoIntersection
-                             Intersection distance -> 
-                                 if distance < lastNearestDistance then 
+                             Intersection distance ->
+                                 if distance < lastNearestDistance then
                                      findInTail distance (IntersectionWithPrimitive currentPrimitive intersection)
                                  else
                                      proceedWithNoIntersection

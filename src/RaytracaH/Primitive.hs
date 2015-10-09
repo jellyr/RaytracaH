@@ -31,8 +31,6 @@ import RaytracaH.Material
 import RaytracaH.Math
 import RaytracaH.Ray (Ray(..))
 
-data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
-
 data Primitive = Plane {
     planePoint :: Vector3D,
     planeNormal :: Vector3D,
@@ -43,6 +41,11 @@ data Primitive = Plane {
 
 instance ToJSON Primitive
 instance FromJSON Primitive
+
+data IntersectionResult = Intersection Float | NoIntersection deriving (Show, Eq)
+
+data PrimitiveIntersection = IntersectionWithPrimitive Primitive IntersectionResult |
+                             NoIntersectionWithPrimitive
 
 intersect :: Primitive -> Ray -> IntersectionResult
 intersect (Plane pPoint pNormal _) (Ray rayOrigin rayDir) = 
