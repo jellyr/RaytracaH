@@ -25,26 +25,23 @@ import System.IO
 
 import RaytracaH
 
--- TODO: refactor
+decodeFromJsonFile :: JSON.FromJSON a => String -> IO (Either String a)
+decodeFromJsonFile fileName = do
+    file <- openFile fileName ReadMode
+    contents <- BS.hGetContents file
+    return (JSON.eitherDecode contents :: JSON.FromJSON a => Either String a)
+
 loadOptions :: String -> IO (Either String RayTracerOptions)
-loadOptions fileName =
-    do
-        file <- openFile fileName ReadMode
-        contents <- BS.hGetContents file
-        return (JSON.eitherDecode contents :: Either String RayTracerOptions)
+loadOptions = decodeFromJsonFile
 
 loadSceneWithCamera :: String -> IO (Either String SceneWithCamera)
-loadSceneWithCamera fileName =
-    do
-        file <- openFile fileName ReadMode
-        contents <- BS.hGetContents file
-        return (JSON.eitherDecode contents :: Either String SceneWithCamera)
+loadSceneWithCamera = decodeFromJsonFile
 
 -- TODO: remove nested case ofs
 -- TODO: make file names readable from program arguments
 main :: IO ()
 main = do
-    putStrLn "raytracaH\n"
+    putStrLn "RaytracaH\n"
     startTime <- getCurrentTime
     optionsDecoded <- loadOptions "config.json"
     case optionsDecoded of
@@ -54,11 +51,11 @@ main = do
             putStrLn "Loaded options from config.json"
             sceneWithCameraDecoded <- loadSceneWithCamera "sceneWithCamera.json"
             case sceneWithCameraDecoded of
-                Left err -> putStrLn ("Error while reading input file: " ++ err)
+                Left err ->
+                    putStrLn ("Error while reading input file: " ++ err)
                 Right sceneWithCamera -> do
                     putStrLn "Loaded scene with camera from file"
                     writeAsciiPPMFile (outputFileName options) (fileWithRender options sceneWithCamera)
                     endTime <- getCurrentTime
                     putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
                     print $ diffUTCTime endTime startTime
-    return ()
