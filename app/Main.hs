@@ -41,6 +41,7 @@ loadSceneWithCamera fileName =
         return (JSON.eitherDecode contents :: Either String SceneWithCamera)
 
 -- TODO: remove nested case ofs
+-- TODO: make file names readable from program arguments
 main :: IO ()
 main = do
     putStrLn "raytracaH\n"
@@ -48,16 +49,16 @@ main = do
     optionsDecoded <- loadOptions "config.json"
     case optionsDecoded of
         Left err ->
-            putStrLn err
+            putStrLn ("Error while reading config file: " ++ err)
         Right options -> do
             putStrLn "Loaded options from config.json"
             sceneWithCameraDecoded <- loadSceneWithCamera "sceneWithCamera.json"
             case sceneWithCameraDecoded of
-                Left err -> putStrLn err
+                Left err -> putStrLn ("Error while reading input file: " ++ err)
                 Right sceneWithCamera -> do
                     putStrLn "Loaded scene with camera from file"
                     writeAsciiPPMFile (outputFileName options) (fileWithRender options sceneWithCamera)
-    endTime <- getCurrentTime
-    putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
-    print $ diffUTCTime endTime startTime
+                    endTime <- getCurrentTime
+                    putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
+                    print $ diffUTCTime endTime startTime
     return ()

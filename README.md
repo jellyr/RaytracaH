@@ -11,7 +11,7 @@ Current version is in very early stage and more features are to come soon.
 - Different types of lights on the scene, in current version there are two types: directional light and point light
 - Movable camera
 - Materials on primitives with diffuse color, specular and reflective factors
-- Configuration readable from file in *.json format
+- Configuration and rendered input readable from file in *.json format
 - Output is written to *.ppm file format
 
 More features are to come in next versions which will be released soon.
