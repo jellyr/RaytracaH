@@ -43,18 +43,18 @@ main :: IO ()
 main = do
     putStrLn "RaytracaH\n"
     startTime <- getCurrentTime
-    optionsDecoded <- loadOptions "config.json"
+    optionsDecoded <- loadOptions "conf/config.json"
     case optionsDecoded of
         Left err ->
             putStrLn ("Error while reading config file: " ++ err)
         Right options -> do
-            putStrLn "Loaded options from config.json"
-            sceneWithCameraDecoded <- loadSceneWithCamera "sceneWithCamera.json"
+            putStrLn "Loaded options"
+            sceneWithCameraDecoded <- loadSceneWithCamera "conf/input.json"
             case sceneWithCameraDecoded of
                 Left err ->
                     putStrLn ("Error while reading input file: " ++ err)
                 Right sceneWithCamera -> do
-                    putStrLn "Loaded scene with camera from file"
+                    putStrLn "Loaded scene with camera"
                     writeAsciiPPMFile (outputFileName options) (fileWithRender options sceneWithCamera)
                     endTime <- getCurrentTime
                     putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
