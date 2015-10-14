@@ -21,6 +21,13 @@ More features are to come in next versions which will be released soon.
 ![Screenshot](http://i.imgur.com/QeoX2Ab.png)
 ![Screenshot](http://i.imgur.com/H9zNJkg.png)
 
+# Usage
+
+RaytracaH uses **stack** as project build tool. To build and run it you will need to have latest version of stack installed in your system.
+For now, running ray tracer is possible through small demo app in Main package. It takes configuration and scene files as input from conf/ directory and produces output to default localization.
+Feel free to play with demo's code.
+In one of next versions RaytracaH will be available as a library.
+
 # TODO
 
 - Optimization
