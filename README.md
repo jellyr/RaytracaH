@@ -3,6 +3,7 @@
 [![Circle CI](https://circleci.com/gh/rafalnowak/RaytracaH.svg?style=svg)](https://circleci.com/gh/rafalnowak/RaytracaH) [![Build Status](https://travis-ci.org/rafalnowak/RaytracaH.svg?branch=master)](https://travis-ci.org/rafalnowak/RaytracaH)
 
 RaytracaH is ray tracer written in Haskell using functional approach.
+
 Current version is in very early stage and more features are to come soon.
 
 # Features
@@ -24,9 +25,10 @@ More features are to come in next versions which will be released soon.
 # Usage
 
 RaytracaH uses **stack** as project build tool. To build and run it you will need to have latest version of stack installed in your system.
+
 For now, running ray tracer is possible through small demo app in Main package. It takes configuration and scene files as input from conf/ directory and produces output to default localization.
-Feel free to play with demo's code.
-In one of next versions RaytracaH will be available as a library.
+
+Feel free to play with demo's code. In one of next versions RaytracaH will be available as a library.
 
 # TODO
 
