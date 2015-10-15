@@ -40,7 +40,7 @@ library
 executable RaytracaH-exe
   hs-source-dirs:      app
   main-is:             Main.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N -funfolding-use-threshold=16 -O2 -optc-O3
   build-depends:       base
                      , aeson
                      , bytestring
