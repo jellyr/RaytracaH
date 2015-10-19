@@ -1,6 +1,6 @@
 {
-    "imgWidth": 640,
-    "imgHeight": 480,
+    "imgWidth": 800,
+    "imgHeight": 600,
     "outputFileName": "test.ppm",
     "infinityDistance": 10000.0,
     "shadowBias": 0.0001,

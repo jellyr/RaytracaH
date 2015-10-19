@@ -4,4 +4,4 @@ packages:
 extra-deps:
 - Vec-1.0.5
 - cabal-helper-0.6.1.0
-resolver: lts-3.9
+resolver: lts-3.10
