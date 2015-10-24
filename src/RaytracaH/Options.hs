@@ -31,7 +31,8 @@ data RayTracerOptions = RayTracerOptions {
     outputFileName :: String,
     backgroundColor :: Color Float,
     infinityDistance :: Float,
-    shadowBias :: Float
+    shadowBias :: Float,
+    maxRayTraceDepth :: Int
 } deriving (Show, Generic)
 
 instance ToJSON RayTracerOptions

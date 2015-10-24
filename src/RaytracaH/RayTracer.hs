@@ -44,16 +44,14 @@ fileWithRender options (Scene.SceneWithCamera scene camera) =
         screen = Screen screenW screenH
 
 render :: RayTracerOptions -> Scene.Scene -> Screen -> Camera -> Pixels
-render options scene screen camera
-    | V.null (Scene.objects scene) = V.map (const $ fromColor (backgroundColor options)) primaryRays
-    | otherwise =
-        V.map (fromColor . traceRay options scene 1) primaryRays
+render options scene screen camera =
+    V.map (fromColor . traceRay options scene 0) primaryRays
     where
         primaryRays = Ray.generatePrimaryRays screen camera
 
 traceRay :: RayTracerOptions -> Scene.Scene -> Int -> Ray.Ray -> Color Float
 traceRay options scene depth ray
-    | depth >= 5 = backgroundColor options
+    | depth >= maxRayTraceDepth options = backgroundColor options
     | otherwise = case primitiveWithIntersection of IntersectionWithPrimitive hitPrimitive (Intersection hitDistance) ->
                                                         traceRayBasedOnMaterial options scene depth ray hitPrimitive hitDistance
                                                     _ ->

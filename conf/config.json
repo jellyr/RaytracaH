@@ -4,6 +4,7 @@
     "outputFileName": "test.ppm",
     "infinityDistance": 10000.0,
     "shadowBias": 0.0001,
+    "maxRayTraceDepth": 4,
     "backgroundColor": {
         "r": 0.76,
         "g": 0.8,

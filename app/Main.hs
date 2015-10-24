@@ -48,7 +48,7 @@ main = do
         Left err ->
             putStrLn ("Error while reading config file: " ++ err)
         Right options -> do
-            putStrLn "Loaded options"
+            putStrLn ("Loaded options: " ++ show options ++ "\n")
             sceneWithCameraDecoded <- loadSceneWithCamera "conf/input.json"
             case sceneWithCameraDecoded of
                 Left err ->
@@ -57,5 +57,5 @@ main = do
                     putStrLn "Loaded scene with camera"
                     writeAsciiPPMFile (outputFileName options) (fileWithRender options sceneWithCamera)
                     endTime <- getCurrentTime
-                    putStr ("Work finished, results saved to " ++ "test" ++ ", total time: ")
+                    putStr ("\nWork finished, results saved to " ++ "test" ++ ", total time: ")
                     print $ diffUTCTime endTime startTime
