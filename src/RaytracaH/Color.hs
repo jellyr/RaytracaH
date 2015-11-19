@@ -30,14 +30,10 @@ instance Functor Color where
 
 instance Applicative Color where
     pure f = Color f f f
-    (Color f _ _) <*> (Color r g b) = Color (f r) (f g) (f b)
+    (Color f g h) <*> (Color a b c) = Color (f a) (g b) (h c)
 
 sumColors :: (Num a, Ord a) => a -> Color a -> Color a -> Color a
-sumColors limit (Color rA gA bA) (Color rB gB bB) = Color sumR sumG sumB
-    where
-        sumR = min limit (rA + rB)
-        sumG = min limit (gA + gB)
-        sumB = min limit (bA + bB)
+sumColors limit a b = (\x y -> min limit (x + y)) <$> a <*> b
 
 instance ToJSON a => ToJSON (Color a) where
     toJSON (Color r g b) =
